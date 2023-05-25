@@ -1,12 +1,14 @@
-from django.contrib.auth.models import AbstractBaseUser, AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from .managers import CustomUserManager
 
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
 
     email = models.EmailField(_('email address'), max_length=254, unique=True)
@@ -17,23 +19,24 @@ class CustomUser(AbstractBaseUser):
     password = models.CharField(_('password'), max_length=50)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     is_staff = models.BooleanField(
-        _("staff status"),
+        _('staff status'),
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
     is_active = models.BooleanField(
-        _("active"),
+        _('active'),
         default=True,
         help_text=_(
             "Designates whether this user should be treated as active. "
             "Unselect this instead of deleting accounts."
         ),
     )
+
+    objects = CustomUserManager()
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
-        'username', 'first_name', 'last_name',
-        'phone_number', 'birthday_date', 'password'
+        'first_name', 'last_name', 'phone_number', 'birthday_date', 'password'
     ]
 
     class Meta:
