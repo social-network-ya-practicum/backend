@@ -1,4 +1,3 @@
-from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from users.models import CustomUser
@@ -22,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'email','first_name', 'last_name', 'password', 'phone_number',
+            'email', 'first_name', 'last_name', 'phone_number',
             'birthday_date'
         )
 
@@ -35,7 +34,7 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'email','first_name', 'last_name', 'password', 'phone_number',
+            'email', 'first_name', 'last_name', 'password', 'phone_number',
             'birthday_date'
         )
         extra_kwargs = {
@@ -52,7 +51,7 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            phone_number=validated_data['phone_number'], 
+            phone_number=validated_data['phone_number'],
             birthday_date=validated_data['birthday_date'],
         )
         user.set_password(validated_data['password'])
