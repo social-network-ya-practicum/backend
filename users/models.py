@@ -11,13 +11,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
 
     email = models.EmailField(_('email address'), max_length=254, unique=True)
-    first_name = models.CharField(_('first_name'), max_length=50)
-    last_name = models.CharField(_('last_name'), max_length=50)
+    first_name = models.CharField(_('first_name'), max_length=150)
+    last_name = models.CharField(_('last_name'), max_length=150)
     phone_number = PhoneNumberField(
-        _('phone_number'), max_length=50, unique=True
+        _('phone_number'), max_length=150, unique=True
     )
-    birthday_date = models.DateField(_('birthday_date'), max_length=50)
-    password = models.CharField(_('password'), max_length=50)
+    birthday_date = models.DateField(_('birthday_date'), max_length=150)
+    password = models.CharField(_('password'), max_length=150)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     is_staff = models.BooleanField(
         _('staff status'),
