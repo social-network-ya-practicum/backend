@@ -7,8 +7,9 @@ from rest_framework.response import Response
 
 from .mixins import CreateUpdateListRetrieveViewSet
 from .models import CustomUser
-from .serializers import (ChangePasswordSerializer, CreateCustomUserSerializer,
-                          UserSerializer)
+from .serializers import (
+    ChangePasswordSerializer, CreateCustomUserSerializer,
+    UserSerializer)
 
 
 class ChangePasswordView(CreateAPIView):

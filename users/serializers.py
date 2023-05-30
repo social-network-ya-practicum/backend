@@ -74,3 +74,29 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+    def update(self, instance, validated_data):
+        if validated_data.get('email'):
+            raise serializers.ValidationError(
+                {'Email': 'You cannot change email.'}
+            )
+        instance.first_name = validated_data.get(
+            'first_name', instance.first_name
+        )
+        instance.last_name = validated_data.get(
+            'last_name', instance.last_name
+        )
+        instance.middle_name = validated_data.get(
+            'middle_name', instance.middle_name
+        )
+        instance.phone_number = validated_data.get(
+            'phone_number', instance.phone_number
+        )
+        instance.bio = validated_data.get('bio', instance.bio)
+        instance.birthday_date = validated_data.get(
+            'birthday_date', instance.birthday_date
+        )
+        instance.photo = validated_data.get('photo', instance.photo)
+
+        instance.save()
+        return instance
