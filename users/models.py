@@ -13,11 +13,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), max_length=254, unique=True)
     first_name = models.CharField(_('first_name'), max_length=150)
     last_name = models.CharField(_('last_name'), max_length=150)
+    middle_name = models.CharField(_('middle_name'), max_length=150)
     phone_number = PhoneNumberField(
-        _('phone_number'), max_length=150, unique=True
+        _('phone_number'), max_length=150, unique=True,
+        help_text=_('Format: +99999999999')
     )
     birthday_date = models.DateField(_('birthday_date'), max_length=150)
     password = models.CharField(_('password'), max_length=150)
+    bio = models.TextField(_('bio'), max_length=500, blank=True)
+    photo = models.ImageField(
+        _('Users Photo'),
+        upload_to='users/photo/', null=True, default='default.jpg'
+    )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     is_staff = models.BooleanField(
         _('staff status'),

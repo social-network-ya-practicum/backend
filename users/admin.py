@@ -8,7 +8,7 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
         'email', 'first_name', 'last_name', 'password', 'phone_number',
-        'birthday_date'
+        'birthday_date', 'bio', 'middle_name', 'photo'
     )
     list_filter = ('email', 'first_name', 'last_name')
     fieldsets = (
@@ -19,8 +19,9 @@ class CustomUserAdmin(UserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': (
-                'email', 'first_name', 'last_name', 'password1', 'password2',
-                'phone_number', 'birthday_date', 'is_staff', 'is_active')}),
+                'email', 'first_name', 'last_name', 'middle_name', 'password1',
+                'password2', 'phone_number', 'birthday_date', 'bio',
+                'photo', 'is_staff', 'is_active')}),
     )
     search_fields = (
         'email', 'first_name', 'last_name', 'birthday_date', 'phone_number'

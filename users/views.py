@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .mixins import CreateListRetrieveViewSet
+from .mixins import CreateUpdateListRetrieveViewSet
 from .models import CustomUser
 from .serializers import (ChangePasswordSerializer, CreateCustomUserSerializer,
                           UserSerializer)
@@ -41,7 +41,7 @@ class ChangePasswordView(CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersViewSet(CreateListRetrieveViewSet):
+class UsersViewSet(CreateUpdateListRetrieveViewSet):
     """Users view."""
 
     queryset = CustomUser.objects.all()
