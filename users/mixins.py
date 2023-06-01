@@ -1,7 +1,12 @@
 from rest_framework import mixins, viewsets
 
 
-class CreateListRetrieveViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
-                                mixins.RetrieveModelMixin,
-                                viewsets.GenericViewSet):
+class UpdateListRetrieveViewSet(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin, viewsets.GenericViewSet
+):
+    pass
+
+
+class CreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     pass

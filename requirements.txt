@@ -40,3 +40,5 @@ typing_extensions==4.6.2
 uritemplate==4.1.1
 urllib3==2.0.2
 Pillow==9.5.0
+django-extra-fields==3.0.2
+

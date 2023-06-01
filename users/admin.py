@@ -7,23 +7,31 @@ from .models import CustomUser
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
-        'email', 'first_name', 'last_name', 'password', 'phone_number',
-        'birthday_date'
+        'email', 'first_name', 'last_name', 'birthday_date',
+        'corporate_phone_number'
     )
     list_filter = ('email', 'first_name', 'last_name')
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': (
+            'email', 'first_name', 'last_name',
+            'middle_name', 'birthday_date', 'job_title', 'personal_email',
+            'corporate_phone_number', 'personal_phone_number', 'bio',
+            'photo'
+        )}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': (
-                'email', 'first_name', 'last_name', 'password1', 'password2',
-                'phone_number', 'birthday_date', 'is_staff', 'is_active')}),
+                'email', 'password1', 'password2', 'first_name', 'last_name',
+                'middle_name', 'birthday_date', 'job_title', 'personal_email',
+                'corporate_phone_number', 'personal_phone_number', 'bio',
+                'photo', 'is_staff', 'is_active')}),
     )
     search_fields = (
-        'email', 'first_name', 'last_name', 'birthday_date', 'phone_number'
+        'email', 'first_name', 'last_name', 'birthday_date',
+        'corporate_phone_number'
     )
     ordering = ('email',)
 

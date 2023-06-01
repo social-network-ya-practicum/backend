@@ -13,10 +13,6 @@ def create_superuser(apps, schema_editor):
 
     CustomUser.objects.create_superuser(
         email=os.getenv("SU_EMAIL"),
-        first_name=os.getenv("SU_FIRST_NAME"),
-        last_name=os.getenv("SU_LAST_NAME"),
-        phone_number=os.getenv("SU_PHONE_NUMBER"),
-        birthday_date=os.getenv("SU_BIRTHDAY_DATE"),
         password=os.getenv("SU_PASSWORD"), 
         is_active=True, is_staff=True
     )

@@ -1,6 +1,9 @@
+from django.contrib.auth import get_user_model
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
-from users.models import CustomUser
+CustomUser = get_user_model()
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -18,11 +21,42 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for users endpoint.
     """
 
+    photo = Base64ImageField(required=False, allow_null=True)
+    birthday_day = serializers.SerializerMethodField()
+    birthday_month = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
         fields = (
-            'email', 'first_name', 'last_name', 'phone_number',
-            'birthday_date'
+            'email', 'first_name', 'last_name', 'middle_name', 'job_title',
+            'personal_email', 'corporate_phone_number',
+            'personal_phone_number', 'birthday_day', 'birthday_month',
+            'bio', 'photo'
+        )
+
+    def get_birthday_day(self, obj):
+        if obj.birthday_date:
+            return obj.birthday_date.day
+
+    def get_birthday_month(self, obj):
+        if obj.birthday_date:
+            return obj.birthday_date.month
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user update.
+    """
+
+    photo = Base64ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'first_name', 'last_name', 'middle_name', 'job_title',
+            'personal_email', 'corporate_phone_number',
+            'personal_phone_number', 'birthday_date',
+            'bio', 'photo'
         )
 
 
@@ -30,29 +64,28 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
     """
     Serializer for POST method users endpoint.
     """
+    email = serializers.EmailField(
+        required=True,
+        validators=[
+            UniqueValidator(queryset=CustomUser.objects.all())
+        ]
+    )
 
     class Meta:
         model = CustomUser
         fields = (
-            'email', 'first_name', 'last_name', 'password', 'phone_number',
-            'birthday_date'
+            'email', 'password'
         )
         extra_kwargs = {
             'email': {'required': True},
-            'password': {'required': True, 'write_only': True},
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-            'phone_number': {'required': True},
-            'birthday_date': {'required': True}
+            'password': {
+                'required': True, 'write_only': True, 'min_length': 8
+            },
         }
 
     def create(self, validated_data):
-        user = CustomUser.objects.create(
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            phone_number=validated_data['phone_number'],
-            birthday_date=validated_data['birthday_date'],
+        user = CustomUser(
+            email=validated_data['email']
         )
         user.set_password(validated_data['password'])
         user.save()
