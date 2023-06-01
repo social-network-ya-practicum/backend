@@ -10,35 +10,57 @@ from .managers import CustomUserManager
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
 
-    email = models.EmailField(_('email address'), max_length=254, unique=True)
-    first_name = models.CharField(_('first_name'), max_length=150)
-    last_name = models.CharField(_('last_name'), max_length=150)
-    middle_name = models.CharField(_('middle_name'), max_length=150)
-    phone_number = PhoneNumberField(
-        _('phone_number'), max_length=150, unique=True,
-        help_text=_('Format: +99999999999')
-    )
-    birthday_date = models.DateField(_('birthday_date'), max_length=150)
+    email = models.EmailField(_('email_address'), max_length=254, unique=True)
     password = models.CharField(_('password'), max_length=150)
-    bio = models.TextField(_('bio'), max_length=500, blank=True)
+    first_name = models.CharField(
+        _('first_name'), max_length=150, blank=True, null=True
+    )
+    last_name = models.CharField(
+        _('last_name'), max_length=150, blank=True, null=True
+    )
+    middle_name = models.CharField(
+        _('middle_name'), max_length=150, blank=True, null=True
+    )
+    job_title = models.CharField(
+        _('job_title'), max_length=150, blank=True, null=True
+    )
+    personal_email = models.EmailField(
+        _('personal_email'), max_length=254, unique=True,
+        blank=True, null=True
+    )
+    corporate_phone_number = PhoneNumberField(
+        _('phone_number'), unique=True,
+        help_text=_('Format: +99999999999'),
+        blank=True, null=True
+    )
+    personal_phone_number = PhoneNumberField(
+        _('phone_number'), unique=True,
+        help_text=_('Format: +99999999999'),
+        blank=True, null=True
+    )
+    birthday_date = models.DateField(_('birthday_date'), blank=True, null=True)
+    bio = models.TextField(
+        _('bio'), max_length=500, blank=True, null=True,
+        help_text=_('Maximum 500 characters.')
+    )
     photo = models.ImageField(
         _('Users Photo'),
-        upload_to='users/photo/', null=True, default='default.jpg'
+        upload_to='users/photo/', null=True, blank=True
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
         help_text=_(
-            "Designates whether the user can log into this admin site."
+            'Designates whether the user can log into this admin site.'
         ),
     )
     is_active = models.BooleanField(
         _('active'),
         default=True,
         help_text=_(
-            "Designates whether this user should be treated as active. "
-            "Unselect this instead of deleting accounts."
+            'Designates whether this user should be treated as active. '
+            'Unselect this instead of deleting accounts.'
         ),
     )
 
@@ -46,7 +68,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
-        'first_name', 'last_name', 'phone_number', 'birthday_date', 'password'
+        'password'
     ]
 
     class Meta:
