@@ -7,6 +7,6 @@ from posts.models import Post
 class PostAdmin(admin.ModelAdmin):
     """Класс для работы с постами в админ-панели."""
 
-    list_display = ('pk', 'text', 'author', 'pub_date', 'update_date', 'image',)
+    list_display = ('pk', 'text', 'author', 'pub_date', 'update_date', 'image')
     search_fields = ('text',)
     list_filter = ('pub_date',)

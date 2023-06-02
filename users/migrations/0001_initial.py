@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('personal_email', models.EmailField(blank=True, max_length=254, null=True, unique=True, verbose_name='personal_email')),
                 ('corporate_phone_number', phonenumber_field.modelfields.PhoneNumberField(blank=True, help_text='Format: +99999999999', max_length=128, null=True, region=None, unique=True, verbose_name='phone_number')),
                 ('personal_phone_number', phonenumber_field.modelfields.PhoneNumberField(blank=True, help_text='Format: +99999999999', max_length=128, null=True, region=None, unique=True, verbose_name='phone_number')),
-                ('birthday_date', models.DateField(blank=True, null=True, verbose_name='birthday_date')),
+                ('birthday_date', models.DateField(blank=True, null=True, verbose_name='birthday_date', help_text='Format: YYYY-MM-DD')),
                 ('bio', models.TextField(blank=True, help_text='Maximum 500 characters.', max_length=500, null=True, verbose_name='bio')),
                 ('photo', models.ImageField(default='default.jpg', null=True, upload_to='users/photo/', verbose_name='Users Photo')),
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
