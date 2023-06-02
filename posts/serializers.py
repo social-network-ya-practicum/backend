@@ -1,7 +1,9 @@
+from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from posts.models import Post, Image
+from posts.models import Image, Post
+from posts.utils import del_images
 from users.serializers import UserSerializer
 
 
@@ -16,7 +18,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    """Сериализер для модели с Post."""
+    """Сериализация модели Post."""
 
     author = UserSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
@@ -44,6 +46,7 @@ class PostSerializer(serializers.ModelSerializer):
         )
         Image.objects.bulk_create(objs_image)
 
+    @transaction.atomic
     def create(self, validate_data):
         images = validate_data.pop('images')
         post = Post(**validate_data)
@@ -51,3 +54,11 @@ class PostSerializer(serializers.ModelSerializer):
         self.create_images(images, post)
         return post
 
+    @transaction.atomic()
+    def update(self, instance, validate_data):
+        images = validate_data.pop('images')
+        super().update(instance, validate_data)
+        del_images(instance)
+        Image.objects.filter(post=instance).delete()
+        self.create_images(images, instance)
+        return instance

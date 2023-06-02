@@ -3,7 +3,6 @@ from rest_framework import routers
 
 from posts.views import PostViewSet
 
-
 app_name = 'api'
 router_v1 = routers.DefaultRouter()
 

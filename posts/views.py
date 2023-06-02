@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from posts.models import Post
 from posts.permissions import IsAuthorAdminOrReadOnly
 from posts.serializers import PostSerializer
+from posts.utils import del_images
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -13,10 +14,14 @@ class PostViewSet(viewsets.ModelViewSet):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = (IsAuthorAdminOrReadOnly,)
+    permission_classes = (IsAuthorAdminOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def perform_destroy(self, instance):
+        del_images(instance)
+        super().perform_destroy(instance)
 
     @action(
         url_path='like',
@@ -36,3 +41,5 @@ class PostViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE':
             post.users_like.remove(request.user)
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
