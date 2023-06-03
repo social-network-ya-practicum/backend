@@ -67,7 +67,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Birthday cannot be in the future.'
             )
-        elif 1929 < value.year > 2011:
+        if 1929 < value.year > 2011:
             raise serializers.ValidationError('You are so young or so old.')
         return value
 
