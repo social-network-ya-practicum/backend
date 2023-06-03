@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from posts.models import Post
-from posts.permissions import IsAuthorAdminOrReadOnly
+# from posts.permissions import IsAuthorAdminOrReadOnly
 from posts.serializers import PostSerializer
 from posts.utils import del_images
 
