@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -90,3 +92,25 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class BirthdaySerializer(serializers.ModelSerializer):
+    """Сериализер для дней рождений"""
+    birthday_date = serializers.DateField()
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'id',
+            'photo',
+            'first_name',
+            'last_name',
+            'birthday_date',
+        )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        birthday_date = representation.get('birthday_date')
+        new_format = datetime.strptime(birthday_date, '%Y-%m-%d').date()
+        representation['birthday_date'] = new_format.strftime('%d %B')
+        return representation
