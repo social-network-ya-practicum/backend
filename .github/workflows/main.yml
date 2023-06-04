@@ -71,7 +71,10 @@ jobs:
             cd infra
             sudo docker-compose down
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}//csn_backend:latest
-            touch .env       
+          # sudo docker pull ${{ secrets.DOCKER_USERNAME }}//csn_frontend:latest
+
+            rm .env
+            touch .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo SU_EMAIL=${{ secrets.SU_EMAIL }} >> .env
             echo SU_PASSWORD=${{ secrets.SU_PASSWORD }} >> .env     
