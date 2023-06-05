@@ -13,7 +13,8 @@
 
 ### 1. Git clone:
 ```
-git clone https://github.com/social-network-ya-practicum/corporate-social-network.git && cd corporate-social-network/backend
+git clone https://github.com/social-network-ya-practicum/corporate-social-network.git && \
+cd corporate-social-network/backend
 ```
 ### 2. Rename .env_example to .env
 ```
