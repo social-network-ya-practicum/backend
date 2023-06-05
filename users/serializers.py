@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, date
+
 
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
@@ -60,6 +61,16 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'personal_phone_number', 'birthday_date',
             'bio', 'photo'
         )
+
+    def validate_birthday_date(self, value):
+        today = date.today()
+        if value > today:
+            raise serializers.ValidationError(
+                'Birthday cannot be in the future.'
+            )
+        if 1929 < value.year > 2011:
+            raise serializers.ValidationError('You are so young or so old.')
+        return value
 
 
 class CreateCustomUserSerializer(serializers.ModelSerializer):

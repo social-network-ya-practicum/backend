@@ -38,7 +38,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text=_('Format: +99999999999'),
         blank=True, null=True
     )
-    birthday_date = models.DateField(_('birthday_date'), blank=True, null=True)
+    birthday_date = models.DateField(
+        _('birthday_date'), blank=True, null=True,
+        help_text=_('Format: YYYY-MM-DD')
+    )
     bio = models.TextField(
         _('bio'), max_length=500, blank=True, null=True,
         help_text=_('Maximum 500 characters.')
