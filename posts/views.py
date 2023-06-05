@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from posts.models import Post
-#from posts.permissions import IsAuthorAdminOrReadOnly
 from posts.serializers import PostSerializer
 
 
@@ -13,7 +12,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = (IsAuthorAdminOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
