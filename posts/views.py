@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from posts.models import Post
 from posts.serializers import PostSerializer
+from posts.utils import del_images
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -15,6 +16,10 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def perform_destroy(self, instance):
+        del_images(instance)
+        super().perform_destroy(instance)
 
     @action(
         url_path='like',
@@ -34,3 +39,5 @@ class PostViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE':
             post.users_like.remove(request.user)
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)

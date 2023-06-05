@@ -25,12 +25,7 @@ class Post(models.Model):
         verbose_name='Последнее обновление',
         auto_now=True,
     )
-    image = models.ImageField(
-        verbose_name='Картинка',
-        upload_to='posts/images/',
-        null=True,
-        blank=True,
-    )
+
     users_like = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='posts_liked',
@@ -44,3 +39,25 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text[:30]
+
+
+class Image(models.Model):
+    """Модель для изображений к посту."""
+
+    post = models.ForeignKey(
+        Post,
+        verbose_name='Пост',
+        related_name='images',
+        on_delete=models.CASCADE,
+    )
+    image_link = models.ImageField(
+        verbose_name='Изображение',
+        upload_to='posts/images/%Y/%m/%d',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изображения'
+        ordering = ('-post', 'id',)
