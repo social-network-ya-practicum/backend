@@ -1,7 +1,7 @@
 import calendar
 from datetime import datetime
 
-from django.db.models import Value, IntegerField
+from django.db.models import IntegerField, Value
 from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -10,13 +10,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from posts.models import Post
+
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .models import CustomUser
 from .permissions import IsUserOrReadOnly
 from .serializers import (
     BirthdaySerializer, ChangePasswordSerializer, CreateCustomUserSerializer,
-    UserSerializer, UserUpdateSerializer, ShortInfoSerializer,
+    ShortInfoSerializer, UserSerializer, UserUpdateSerializer
 )
 
 

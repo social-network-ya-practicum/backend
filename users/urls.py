@@ -2,8 +2,10 @@ from django.conf.urls import include
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import (BirthdayList, ChangePasswordView, CreateUsersViewSet,
-                    UsersViewSet, ShortInfoView)
+from .views import (
+    BirthdayList, ChangePasswordView, CreateUsersViewSet, ShortInfoView,
+    UsersViewSet,
+)
 
 app_name = 'users'
 
