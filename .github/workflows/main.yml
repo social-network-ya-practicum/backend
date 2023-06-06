@@ -84,9 +84,8 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          echo SU_EMAIL=${{ SU_EMAIL }} >> .env
-          echo SU_PASSWORD= ${{ SU_PASSWORD }}  >> .env
+          echo SU_EMAIL=${{ secrets.SU_EMAIL }} >> .env
+          echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
           sudo docker-compose up -d
           # sudo docker-compose exec backend python manage.py migrate
-          # sudo docker-compose exec backend python manage.py load_ingredients
           # sudo docker-compose exec backend python manage.py collectstatic --no-input
