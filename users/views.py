@@ -1,15 +1,21 @@
+import calendar
+from datetime import datetime
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status
 from rest_framework.decorators import action
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from users.models import CustomUser
+
+from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
-from .models import CustomUser
 from .permissions import IsUserOrReadOnly
-from .serializers import (ChangePasswordSerializer, CreateCustomUserSerializer,
-                          UserSerializer, UserUpdateSerializer)
+from .serializers import (BirthdaySerializer, ChangePasswordSerializer,
+                          CreateCustomUserSerializer, UserSerializer,
+                          UserUpdateSerializer)
 
 
 class ChangePasswordView(CreateAPIView):
@@ -79,3 +85,46 @@ class CreateUsersViewSet(CreateViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CreateCustomUserSerializer
     permission_classes = (AllowAny,)
+
+
+class BirthdayList(ListAPIView):
+    """Сериалайзер для дней рождения"""
+    serializer_class = BirthdaySerializer
+
+    def get_queryset(self):
+        today = datetime.now().date()
+        current_day = today.day
+        current_month = today.month
+        current_year = today.year
+        next_month = today.month + 1
+        day_one = 30
+        day_two = 31
+        amount_day = calendar.monthrange(current_year, current_month)[1]
+        """Если февраль високосный год"""
+        if current_month == 2 and amount_day == 29:
+            return filter_birthday(current_day,
+                                   current_month,
+                                   next_month,
+                                   day_one - 2,
+                                   day_two - 2)
+        """Если февраль невисокосный год"""
+        if current_month == 2 and amount_day == 28:
+            return filter_birthday(current_day,
+                                   current_month,
+                                   next_month,
+                                   day_one - 3,
+                                   day_two - 3)
+        """Нечетный месяц"""
+        if current_month % 2 != 0:
+            return filter_birthday(current_day,
+                                   current_month,
+                                   next_month,
+                                   day_one,
+                                   day_two)
+        """Четный месяц"""
+        if current_month % 2 == 0:
+            return filter_birthday(current_day,
+                                   current_month,
+                                   next_month,
+                                   day_one - 1,
+                                   day_two - 1)

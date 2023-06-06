@@ -18,7 +18,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ('pub_date',)
     inlines = (ImageInline,)
     add_fieldsets = (
-        (None, {'fields': ('count_likes', ),}),
+        (None, {'fields': ('count_likes', ), }),
     )
 
     def count_likes(self, obj):
