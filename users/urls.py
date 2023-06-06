@@ -2,8 +2,8 @@ from django.conf.urls import include
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import (BirthdayList, ChangePasswordView, CreateUsersViewSet,
-                    UsersViewSet)
+from .views import (AddressBookView, BirthdayList, ChangePasswordView,
+                    CreateUsersViewSet, UsersViewSet)
 
 app_name = 'users'
 
@@ -24,6 +24,7 @@ urlpatterns = [
         name='change-password'
     ),
     path('birthday_list/', BirthdayList.as_view()),
+    path('addressbook', AddressBookView.as_view()),
     path('', include(router.urls)),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
