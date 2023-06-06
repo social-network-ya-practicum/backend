@@ -1,4 +1,4 @@
-### Temporary readme
+![workflow](https://github.com/social-network-ya-practicum/backend/actions/workflows/main.yml/badge.svg)
 
 # Backend for CSN project
 
