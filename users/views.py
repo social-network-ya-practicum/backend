@@ -98,11 +98,10 @@ class ShortInfoView(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
-        posts_count = Post.objects.filter(author_id=user_id).count()
-        user_queryset = CustomUser.objects.filter(id=user_id).annotate(
-            posts_count=Value(posts_count, output_field=IntegerField())
+        return CustomUser.objects.filter(id=user_id).annotate(
+            posts_count=Value(Post.objects.filter(author_id=user_id).count(),
+                              output_field=IntegerField())
         )
-        return user_queryset
 
 
 class BirthdayList(ListAPIView):
