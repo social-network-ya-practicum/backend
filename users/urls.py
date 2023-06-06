@@ -3,7 +3,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (BirthdayList, ChangePasswordView, CreateUsersViewSet,
-                    UsersViewSet)
+                    UsersViewSet, ShortInfoView)
 
 app_name = 'users'
 
@@ -22,6 +22,11 @@ urlpatterns = [
         'users/set_password/',
         ChangePasswordView.as_view(),
         name='change-password'
+    ),
+    path(
+        'users/short_info/<int:user_id>/',
+        ShortInfoView.as_view({'get': 'list'}),
+        name='users-short-info'
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('', include(router.urls)),

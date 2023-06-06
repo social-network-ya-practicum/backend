@@ -45,6 +45,15 @@ class UserSerializer(serializers.ModelSerializer):
             return obj.birthday_date.month
 
 
+class ShortInfoSerializer(UserSerializer):
+    """Serializer for show short info about user."""
+    posts_count = serializers.IntegerField()
+
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'middle_name', 'job_title', 'posts_count')
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for user update.
