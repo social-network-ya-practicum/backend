@@ -1,5 +1,4 @@
 ![workflow](https://github.com/social-network-ya-practicum/backend/actions/workflows/main.yml/badge.svg?event=pull_request)
-
 # Backend for CSN project
 
 **Stack**:
