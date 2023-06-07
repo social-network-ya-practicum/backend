@@ -8,7 +8,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='secret_django_key'),
 
-
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -21,7 +20,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
-    'api',
     'posts.apps.PostsConfig',
     'rest_framework',
     'rest_framework.authtoken',
@@ -71,13 +69,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT')
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': f'{BASE_DIR}/db.sqlite3',
-#     }
-# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

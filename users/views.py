@@ -1,22 +1,25 @@
 import calendar
 from datetime import datetime
 
+from django.db.models import IntegerField, Value
 from django.utils.translation import gettext_lazy as _
-from rest_framework import filters, permissions, status
+from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from users.models import CustomUser
-
+from posts.models import Post
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
+from .models import CustomUser
 from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
-from .serializers import (AddressBookSerializer, BirthdaySerializer,
-                          ChangePasswordSerializer, CreateCustomUserSerializer,
-                          UserSerializer, UserUpdateSerializer)
+from .serializers import (
+    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
+    CreateCustomUserSerializer, ShortInfoSerializer, UserSerializer,
+    UserUpdateSerializer,
+)
 
 
 class ChangePasswordView(CreateAPIView):
@@ -86,6 +89,20 @@ class CreateUsersViewSet(CreateViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CreateCustomUserSerializer
     permission_classes = (AllowAny,)
+
+
+class ShortInfoView(viewsets.ReadOnlyModelViewSet):
+    """Short info about user."""
+
+    serializer_class = ShortInfoSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user_id = self.kwargs.get("user_id")
+        return CustomUser.objects.filter(id=user_id).annotate(
+            posts_count=Value(Post.objects.filter(author_id=user_id).count(),
+                              output_field=IntegerField())
+        )
 
 
 class BirthdayList(ListAPIView):
