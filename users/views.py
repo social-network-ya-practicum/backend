@@ -2,7 +2,7 @@ import calendar
 from datetime import datetime
 
 from django.utils.translation import gettext_lazy as _
-from rest_framework import permissions, status
+from rest_framework import filters, permissions, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,10 +12,11 @@ from users.models import CustomUser
 
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
+from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
-from .serializers import (BirthdaySerializer, ChangePasswordSerializer,
-                          CreateCustomUserSerializer, UserSerializer,
-                          UserUpdateSerializer)
+from .serializers import (AddressBookSerializer, BirthdaySerializer,
+                          ChangePasswordSerializer, CreateCustomUserSerializer,
+                          UserSerializer, UserUpdateSerializer)
 
 
 class ChangePasswordView(CreateAPIView):
@@ -128,3 +129,14 @@ class BirthdayList(ListAPIView):
                                    next_month,
                                    day_one - 1,
                                    day_two - 1)
+
+
+class AddressBookView(ListAPIView):
+    """Create address book view."""
+
+    queryset = CustomUser.objects.all().order_by('last_name')
+    serializer_class = AddressBookSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = AddressBookSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['last_name', 'job_title']
