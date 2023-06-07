@@ -133,3 +133,16 @@ class BirthdaySerializer(serializers.ModelSerializer):
         new_format = datetime.strptime(birthday_date, '%Y-%m-%d').date()
         representation['birthday_date'] = new_format.strftime('%d %B')
         return representation
+
+
+class AddressBookSerializer(serializers.ModelSerializer):
+    """
+    Serializer for addressbook.
+    """
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'id', 'first_name', 'middle_name', 'last_name', 'job_title',
+            'email', 'corporate_phone_number', 'photo'
+        )

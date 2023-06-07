@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.db.models import IntegerField, Value
 from django.utils.translation import gettext_lazy as _
-from rest_framework import permissions, status, viewsets
+from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,10 +13,11 @@ from posts.models import Post
 
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
+from .pagination import AddressBookSetPagination
 from .models import CustomUser
 from .permissions import IsUserOrReadOnly
 from .serializers import (
-    BirthdaySerializer, ChangePasswordSerializer, CreateCustomUserSerializer,
+    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer, CreateCustomUserSerializer,
     ShortInfoSerializer, UserSerializer, UserUpdateSerializer
 )
 
@@ -145,3 +146,14 @@ class BirthdayList(ListAPIView):
                                    next_month,
                                    day_one - 1,
                                    day_two - 1)
+
+
+class AddressBookView(ListAPIView):
+    """Create address book view."""
+
+    queryset = CustomUser.objects.all().order_by('last_name')
+    serializer_class = AddressBookSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = AddressBookSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['last_name', 'job_title']
