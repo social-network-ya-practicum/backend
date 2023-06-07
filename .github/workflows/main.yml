@@ -71,10 +71,8 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         stack_file_name: docker-compose.yaml
         script: |
-          # sudo docker pull ${{ secrets.DOCKER_USERNAME }}/csn_frontend
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
-          sudo docker-compose stop
-          sudo docker-compose rm backend
+          docker-compose down
+          docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
           rm .env
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
@@ -86,6 +84,4 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo SU_EMAIL=${{ secrets.SU_EMAIL }} >> .env
           echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
-          sudo docker-compose up -d
-          # sudo docker-compose exec backend python manage.py migrate
-          # sudo docker-compose exec backend python manage.py collectstatic --no-input
+          docker-compose up -d
