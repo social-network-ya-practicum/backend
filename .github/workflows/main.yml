@@ -68,7 +68,6 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
-        stack_file_name: docker-compose.yaml
         script: |
           docker-compose down
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
