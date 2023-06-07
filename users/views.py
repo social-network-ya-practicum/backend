@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from posts.models import Post
+
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .models import CustomUser
