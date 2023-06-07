@@ -10,15 +10,15 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from posts.models import Post
-
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
-from .pagination import AddressBookSetPagination
 from .models import CustomUser
+from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
 from .serializers import (
-    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer, CreateCustomUserSerializer,
-    ShortInfoSerializer, UserSerializer, UserUpdateSerializer
+    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
+    CreateCustomUserSerializer, ShortInfoSerializer, UserSerializer,
+    UserUpdateSerializer,
 )
 
 
