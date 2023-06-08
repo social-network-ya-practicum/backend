@@ -69,7 +69,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          docker compose down
+          docker-compose down
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
           
           rm .env
@@ -85,4 +85,4 @@ jobs:
           echo SU_EMAIL=${{ secrets.SU_EMAIL }} >> .env
           echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
           
-          docker compose up -d
+          docker-compose up -d
