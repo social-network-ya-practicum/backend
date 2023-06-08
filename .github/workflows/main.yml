@@ -69,7 +69,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          docker-compose down
+          docker-compose stop
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
           
           rm .env
