@@ -70,7 +70,6 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
-          docker image prune --filter "dangling=true" -f
           docker-compose down
           sysctl -w vm.drop_caches=3
           
@@ -88,3 +87,4 @@ jobs:
           echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
           
           docker-compose up -d
+          docker image prune --filter "dangling=true" -f
