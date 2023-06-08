@@ -33,5 +33,5 @@ docker exec -it infra-web-1 python manage.py migrate && \
 docker exec -it infra-web-1 python manage.py collectstatic --no-input
 ```
 ### 6. Project documentation is available at:
-https://socialnetwork.sytes.net/swagger/
-https://socialnetwork.sytes.net/redoc/
+https://csn.sytes.net/swagger/
+https://csn.sytes.net/redoc/
