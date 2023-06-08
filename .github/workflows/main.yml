@@ -73,8 +73,10 @@ jobs:
           docker image prune --filter "dangling=true"
           docker-compose down
           sysctl -w vm.drop_caches=3
+          
           rm .env
           touch .env
+          
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -84,4 +86,5 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo SU_EMAIL=${{ secrets.SU_EMAIL }} >> .env
           echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
+          
           docker-compose up -d
