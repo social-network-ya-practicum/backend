@@ -69,10 +69,10 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          docker-compose stop
           docker-compose down
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
           sysctl -w vm.drop_caches=3
+          docker image prune --filter "dangling=true"
           rm .env
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
