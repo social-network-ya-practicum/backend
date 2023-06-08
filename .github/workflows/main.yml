@@ -69,8 +69,10 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          docker compose down
+          docker-compose stop
+          docker-compose down
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
+          sysctl -w vm.drop_caches=3
           rm .env
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
@@ -82,4 +84,4 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo SU_EMAIL=${{ secrets.SU_EMAIL }} >> .env
           echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
-          docker compose up -d
+          docker-compose up -d
