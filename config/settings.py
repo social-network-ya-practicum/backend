@@ -10,6 +10,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='secret_django_key'),
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+CSRF_COOKIE_SECURE = False
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
