@@ -85,3 +85,4 @@ jobs:
           echo SU_PASSWORD= ${{ secrets.SU_PASSWORD }}  >> .env
           docker-compose up -d
           docker image prune --filter "dangling=true" -f
+          sysctl -w vm.drop_caches=3
