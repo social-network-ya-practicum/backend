@@ -70,6 +70,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           docker-compose stop
+          docker-compose down
           docker pull ${{ secrets.DOCKER_USERNAME }}/csn_backend:latest
           
           rm .env
