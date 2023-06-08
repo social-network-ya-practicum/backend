@@ -8,6 +8,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='secret_django_key'),
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
