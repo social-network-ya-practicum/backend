@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'phonenumber_field',
     'djoser',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
