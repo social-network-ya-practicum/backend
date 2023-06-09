@@ -3,9 +3,10 @@ from rest_framework.routers import DefaultRouter
 
 from posts.views import PostViewSet
 from users.views import (
-    AddressBookView, BirthdayList, ChangePasswordView, CreateUsersViewSet,
-    ShortInfoView, UsersViewSet,
+    AddressBookView, BirthdayList, ChangePasswordView,
+    CreateUsersViewSet, ShortInfoView, UsersViewSet
 )
+
 
 app_name = 'api'
 
@@ -31,6 +32,11 @@ urlpatterns = [
         'users/short_info/<int:user_id>/',
         ShortInfoView.as_view({'get': 'list'}),
         name='users-short-info'
+    ),
+    path(
+        'users/<int:user_id>/posts/',
+        PostViewSet.as_view({'get': 'list'}),
+        name='user-posts'
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
