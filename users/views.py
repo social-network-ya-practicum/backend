@@ -14,13 +14,12 @@ from posts.models import Post
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .models import CustomUser
-from .pagination import AddressBookSetPagination
+from .pagination import AddressBookSetPagination, UsersSetPagination
 from .permissions import IsUserOrReadOnly
-from .serializers import (
-    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
-    CreateCustomUserSerializer, ShortInfoSerializer, UserSerializer,
-    UserUpdateSerializer,
-)
+from .serializers import (AddressBookSerializer, BirthdaySerializer,
+                          ChangePasswordSerializer, CreateCustomUserSerializer,
+                          ShortInfoSerializer, UserSerializer,
+                          UserUpdateSerializer)
 
 
 class ChangePasswordView(CreateAPIView):
@@ -61,6 +60,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = UsersSetPagination
 
     def get_serializer_class(self):
         if self.request.method in self.actions_list:
@@ -77,7 +77,9 @@ class UsersViewSet(UpdateListRetrieveViewSet):
     @action(
         methods=['get'],
         detail=False,
-        permission_classes=(IsAuthenticated,))
+        permission_classes=(IsAuthenticated,),
+        pagination_class=None
+    )
     def me(self, request):
         user_instance = self.request.user
         serializer = self.get_serializer(user_instance)
