@@ -66,7 +66,6 @@ class UsersViewSet(UpdateListRetrieveViewSet):
     pagination_class = LimitOffsetPagination
     lookup_field = 'pk'
 
-
     def get_serializer_class(self):
         if self.request.method in self.actions_list:
             return UserUpdateSerializer
