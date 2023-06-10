@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -17,9 +18,10 @@ from .models import CustomUser
 from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
 from .serializers import (
-    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
-    CreateCustomUserSerializer, ShortInfoSerializer, UserSerializer,
-    UserUpdateSerializer,
+    AddressBookSerializer, BirthdaySerializer,
+    ChangePasswordSerializer, CreateCustomUserSerializer,
+    ShortInfoSerializer, UserSerializer,
+    UserUpdateSerializer
 )
 
 
@@ -61,6 +63,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
         if self.request.method in self.actions_list:
@@ -77,7 +80,9 @@ class UsersViewSet(UpdateListRetrieveViewSet):
     @action(
         methods=['get'],
         detail=False,
-        permission_classes=(IsAuthenticated,))
+        permission_classes=(IsAuthenticated,),
+        pagination_class=None
+    )
     def me(self, request):
         user_instance = self.request.user
         serializer = self.get_serializer(user_instance)
