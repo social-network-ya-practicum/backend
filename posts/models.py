@@ -1,6 +1,6 @@
 from django.db import models
 
-from config import settings
+from config.settings import AUTH_USER_MODEL
 from users.models import CustomUser
 
 
@@ -27,7 +27,7 @@ class Post(models.Model):
     )
 
     users_like = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
+        AUTH_USER_MODEL,
         related_name='posts_liked',
         blank=True
     )
