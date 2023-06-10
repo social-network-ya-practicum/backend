@@ -13,15 +13,10 @@ from posts.utils import del_images
 class PostViewSet(viewsets.ModelViewSet):
     """Добавление, изменение и удаление постов. Получение списка постов."""
 
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (IsAuthorAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
-
-    def get_queryset(self):
-        if self.kwargs.get("user_id"):
-            author = self.request.user
-            return Post.objects.filter(author=author)
-        return Post.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

@@ -33,11 +33,6 @@ urlpatterns = [
         ShortInfoView.as_view({'get': 'list'}),
         name='users-short-info'
     ),
-    path(
-        'users/<int:user_id>/posts/',
-        PostViewSet.as_view({'get': 'list'}),
-        name='user-posts'
-    ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
 ]
