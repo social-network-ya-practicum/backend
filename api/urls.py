@@ -1,19 +1,22 @@
-from django.conf.urls import include
-from django.urls import path
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (
+from posts.views import PostViewSet
+from users.views import (
     AddressBookView, BirthdayList, ChangePasswordView, CreateUsersViewSet,
     ShortInfoView, UsersViewSet,
 )
 
-app_name = 'users'
+app_name = 'api'
 
 router = DefaultRouter()
-
+router.register(r'posts', PostViewSet, basename='posts')
 router.register(r'users', UsersViewSet, basename='users')
 
 urlpatterns = [
+    path('', include(router.urls)),
+    path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
     path(
         'users/registration/',
         CreateUsersViewSet.as_view({'post': 'create'}),
@@ -31,7 +34,4 @@ urlpatterns = [
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
-    path('', include(router.urls)),
-    path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken')),
 ]

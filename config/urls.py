@@ -8,8 +8,7 @@ from rest_framework import permissions
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('posts.urls')),
-    path('api/', include('users.urls')),
+    path('api/v1/', include('api.urls')),
 ]
 
 schema_view = get_schema_view(
@@ -21,7 +20,7 @@ schema_view = get_schema_view(
         license=openapi.License(name='BSD License'),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns += [
