@@ -13,7 +13,6 @@ from posts.utils import del_images
 class PostViewSet(viewsets.ModelViewSet):
     """Добавление, изменение и удаление постов. Получение списка постов."""
 
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (IsAuthorAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
