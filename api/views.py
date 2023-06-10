@@ -18,16 +18,9 @@ from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
 from .serializers import (
-<<<<<<< HEAD:api/views.py
     AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
     CreateCustomUserSerializer, PostSerializer, ShortInfoSerializer,
     UserSerializer, UserUpdateSerializer,
-=======
-    AddressBookSerializer, BirthdaySerializer,
-    ChangePasswordSerializer, CreateCustomUserSerializer,
-    ShortInfoSerializer, UserSerializer,
-    UserUpdateSerializer
->>>>>>> b0f4c9696103ce8b48fef283236bc4e34748f070:users/views.py
 )
 from .utils import del_images
 
