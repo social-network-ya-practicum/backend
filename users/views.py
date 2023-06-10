@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from posts.models import Post
+from posts.serializers import PostSerializer
 
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
@@ -61,9 +62,9 @@ class UsersViewSet(UpdateListRetrieveViewSet):
 
     actions_list = ['PUT', 'PATCH']
     queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = LimitOffsetPagination
+    lookup_field = 'pk'
 
     def get_serializer_class(self):
         if self.request.method in self.actions_list:
@@ -79,13 +80,25 @@ class UsersViewSet(UpdateListRetrieveViewSet):
 
     @action(
         methods=['get'],
-        detail=False,
-        permission_classes=(IsAuthenticated,),
-        pagination_class=None
+        detail=False
     )
     def me(self, request):
         user_instance = self.request.user
         serializer = self.get_serializer(user_instance)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    @action(
+        methods=['get'],
+        detail=True
+    )
+    def posts(self, request, pk=None):
+        user_instance = CustomUser.objects.get(pk=pk)
+        posts = user_instance.posts.all()
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = PostSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status.HTTP_200_OK)
 
 

@@ -17,12 +17,6 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
-    def get_queryset(self):
-        if self.kwargs.get("user_id"):
-            author = self.request.user
-            return Post.objects.filter(author=author)
-        return Post.objects.all()
-
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
