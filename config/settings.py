@@ -29,18 +29,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
     'posts.apps.PostsConfig',
+    'api.apps.ApiConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
     'phonenumber_field',
     'djoser',
-    'api.apps.ApiConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -129,3 +131,7 @@ DJOSER = {
         'current_user': 'api.serializers.UserSerializer',
     },
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ALLOW_CREDENTIALS = True
