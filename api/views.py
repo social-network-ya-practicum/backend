@@ -1,7 +1,8 @@
-import calendar
+from calendar import monthrange
 from datetime import datetime
 
 from django.db.models import IntegerField, Value
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -11,19 +12,53 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from posts.models import Post
-from posts.serializers import PostSerializer
+from users.models import CustomUser
 
 from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
-from .models import CustomUser
 from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
 from .serializers import (
-    AddressBookSerializer, BirthdaySerializer,
-    ChangePasswordSerializer, CreateCustomUserSerializer,
-    ShortInfoSerializer, UserSerializer,
-    UserUpdateSerializer
+    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
+    CreateCustomUserSerializer, PostSerializer, ShortInfoSerializer,
+    UserSerializer, UserUpdateSerializer,
 )
+from .utils import del_images
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    """Добавление, изменение и удаление постов. Получение списка постов."""
+
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_destroy(self, instance):
+        del_images(instance)
+        super().perform_destroy(instance)
+
+    @action(
+        url_path='like',
+        methods=['post', 'delete'],
+        detail=True,
+    )
+    def get_like(self, request, pk):
+        """Лайкнуть пост, отменить лайк."""
+        post = get_object_or_404(Post, id=pk)
+        if request.method == 'POST':
+            post.users_like.add(request.user)
+            return Response(
+                PostSerializer(post).data,
+                status=status.HTTP_201_CREATED
+            )
+
+        if request.method == 'DELETE':
+            post.users_like.remove(request.user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class ChangePasswordView(CreateAPIView):
@@ -42,7 +77,7 @@ class ChangePasswordView(CreateAPIView):
 
         if serializer.is_valid():
             if not self.object.check_password(
-                serializer.validated_data.get('current_password')
+                    serializer.validated_data.get('current_password')
             ):
                 return Response(
                     {_('current_password'): _('Wrong password.')},
@@ -54,7 +89,8 @@ class ChangePasswordView(CreateAPIView):
                 {_('message'): _('Password updated successfully')},
                 status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(UpdateListRetrieveViewSet):
@@ -119,8 +155,9 @@ class ShortInfoView(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
         return CustomUser.objects.filter(id=user_id).annotate(
-            posts_count=Value(Post.objects.filter(author_id=user_id).count(),
-                              output_field=IntegerField())
+            posts_count=Value(
+                Post.objects.filter(author_id=user_id).count(),
+                output_field=IntegerField())
         )
 
 
@@ -136,7 +173,7 @@ class BirthdayList(ListAPIView):
         next_month = today.month + 1
         day_one = 30
         day_two = 31
-        amount_day = calendar.monthrange(current_year, current_month)[1]
+        amount_day = monthrange(current_year, current_month)[1]
         """Если февраль високосный год"""
         if current_month == 2 and amount_day == 29:
             return filter_birthday(current_day,
