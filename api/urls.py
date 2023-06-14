@@ -13,8 +13,6 @@ router.register(r'posts', PostViewSet, basename='posts')
 router.register(r'users', UsersViewSet, basename='users')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path(
         'users/registration/',
@@ -38,4 +36,5 @@ urlpatterns = [
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
+    path('', include(router.urls)),
 ]
