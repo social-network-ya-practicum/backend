@@ -10,60 +10,65 @@ from api.managers import CustomUserManager
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
 
-    email = models.EmailField(_('email_address'), max_length=254, unique=True)
-    password = models.CharField(_('password'), max_length=150)
+    email = models.EmailField(
+        _('Корпоративная почта'), max_length=254, unique=True
+    )
+    password = models.CharField(_('Пароль'), max_length=150)
     first_name = models.CharField(
-        _('first_name'), max_length=150, blank=True, null=True
+        _('Имя'), max_length=150, blank=True, null=True
     )
     last_name = models.CharField(
-        _('last_name'), max_length=150, blank=True, null=True
+        _('Фамилия'), max_length=150, blank=True, null=True
     )
     middle_name = models.CharField(
-        _('middle_name'), max_length=150, blank=True, null=True
+        _('Отчество'), max_length=150, blank=True, null=True
     )
     job_title = models.CharField(
-        _('job_title'), max_length=150, blank=True, null=True
+        _('Должность'), max_length=150, blank=True, null=True
     )
     personal_email = models.EmailField(
-        _('personal_email'), max_length=254, unique=True,
+        _('Личная почта'), max_length=254, unique=True,
         blank=True, null=True
     )
     corporate_phone_number = PhoneNumberField(
-        _('phone_number'), unique=True,
-        help_text=_('Format: +99999999999'),
+        _('Корпоративный номер телефона'), unique=True,
+        help_text=_('Формат: +99999999999'),
         blank=True, null=True
     )
     personal_phone_number = PhoneNumberField(
-        _('phone_number'), unique=True,
-        help_text=_('Format: +99999999999'),
+        _('Личный номер телефона'), unique=True,
+        help_text=_('Формат: +99999999999'),
         blank=True, null=True
     )
     birthday_date = models.DateField(
-        _('birthday_date'), blank=True, null=True,
-        help_text=_('Format: YYYY-MM-DD')
+        _('День рождения'), blank=True, null=True,
+        help_text=_('Формат: ГГГГ-ММ-ДД')
     )
     bio = models.TextField(
-        _('bio'), max_length=500, blank=True, null=True,
-        help_text=_('Maximum 500 characters.')
+        _('Биография'), max_length=500, blank=True, null=True,
+        help_text=_('Максимум 500 знаков.')
     )
     photo = models.ImageField(
-        _('Users Photo'),
+        _('Фотография'),
         upload_to='users/photo/', null=True, blank=True
     )
-    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+    date_joined = models.DateTimeField(
+        _('Дата создания аккаунта'), default=timezone.now
+    )
     is_staff = models.BooleanField(
-        _('staff status'),
+        _('Статус администратора'),
         default=False,
         help_text=_(
-            'Designates whether the user can log into this admin site.'
+            'Определяет, может ли пользователь войти на этот сайт '
+            'с правами администратора.'
         ),
     )
     is_active = models.BooleanField(
-        _('active'),
+        _('Статус активности'),
         default=True,
         help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
+            'Указывает возможность пользователя войти на портал. '
+            'Снимите чекбокс вместо удаления учетной записи.'
         ),
     )
 
