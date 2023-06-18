@@ -7,6 +7,7 @@ import pytest
 class TestPostsAPI:
     post_url = '/api/v1/posts/'
     post_detail_url = '/api/v1/posts/{id}/'
+    post_like_url = '/api/v1/posts/{id}/like/'
 
     def test_post_list_not_found(self, client):
         response = client.get(self.post_url)
@@ -21,6 +22,8 @@ class TestPostsAPI:
         assert response.status_code != HTTPStatus.NOT_FOUND, (
             f'Эндпойнт {self.post_detail_url.format(id=post_1.id)} не найден.'
         )
+
+    def test_post_
 
     def test_post_list_not_auth(self, client):
         response = client.get(self.post_url)
@@ -55,5 +58,7 @@ class TestPostsAPI:
             f'{self.post_detail_url.format(id=post_1.id)} ' 
             'должен возвращать ответ со статусом 200.'
         )
+
+
 
 
