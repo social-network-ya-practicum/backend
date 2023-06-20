@@ -66,7 +66,7 @@ class TestPostsAPI:
 
         assert response.status_code == HTTPStatus.OK, (
             'GET-запрос авторизованного пользователя к '
-            f'{self.post_detail_url.format(id=post_1.id)} ' 
+            f'{self.post_detail_url.format(id=post_1.id)} '
             'должен возвращать ответ со статусом 200.'
         )
 
@@ -98,7 +98,8 @@ class TestPostsAPI:
         )
 
     def test_post_delete_like_auth(self, user_client, post_liked):
-        response = user_client.delete(self.post_like_url.format(id=post_liked.id))
+        response = user_client.delete(
+            self.post_like_url.format(id=post_liked.id))
 
         assert response.status_code == HTTPStatus.NO_CONTENT, (
             'DELETE-запрос авторизованного пользователя к '
