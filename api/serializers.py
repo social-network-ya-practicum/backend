@@ -2,14 +2,25 @@ from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField
+from drf_extra_fields.fields import Base64ImageField, HybridImageField
 from posts.models import Image, Post
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from api.utils import del_images
 
 CustomUser = get_user_model()
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    """Сериализация изображений."""
+
+    image_link = Base64ImageField(required=False)
+
+    class Meta:
+        fields = ('image_link',)
+        model = Image
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'email', 'first_name', 'last_name', 'middle_name', 'job_title',
+            'id', 'first_name', 'last_name', 'middle_name', 'job_title',
             'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
@@ -37,16 +48,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_birthday_month(self, obj):
         if obj.birthday_date:
             return obj.birthday_date.month
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    """Сериализация изображений."""
-
-    image_link = Base64ImageField(required=False)
-
-    class Meta:
-        fields = ('image_link',)
-        model = Image
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -120,12 +121,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     Serializer for user update.
     """
 
-    photo = Base64ImageField(required=False, allow_null=True)
+    photo = HybridImageField(required=False, allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = (
-            'first_name', 'last_name', 'middle_name', 'job_title',
+            'id', 'first_name', 'last_name', 'middle_name', 'job_title',
             'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_date',
             'bio', 'photo'
