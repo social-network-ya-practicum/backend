@@ -1,7 +1,9 @@
 from datetime import datetime
 
 import pytest
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
+
 from users.models import CustomUser
 
 
@@ -93,7 +95,26 @@ def authenticated_user_factory(new_user_factory, client):
         return user
     return create_user
 
-pytest_plugins = [
-    'tests.fixtures.fixture_user',
-    'tests.fixtures.fixture_data',
-]
+
+@pytest.fixture
+def authenticated_user(django_user_model):
+    """Аутентифицированный пользователь."""
+    return django_user_model.objects.create_user(
+        email='user_2@mail.ru', password='123456'
+    )
+
+
+@pytest.fixture
+def token(authenticated_user):
+    """Токен для пользователя."""
+    token = Token.objects.create(user=authenticated_user)
+
+    return token.key
+
+
+@pytest.fixture
+def user_client(token):
+    """Клиент авторизованного пользователя."""
+    user_client = APIClient()
+    user_client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+    return user_client

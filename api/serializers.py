@@ -12,12 +12,22 @@ from api.utils import del_images
 CustomUser = get_user_model()
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    """Сериализация изображений."""
+
+    image_link = Base64ImageField(required=False)
+
+    class Meta:
+        fields = ('image_link',)
+        model = Image
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for users endpoint.
     """
 
-    photo = Base64ImageField(required=False, allow_null=True)
+    photo = ImageSerializer(required=False, allow_null=True)
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
 
@@ -37,16 +47,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_birthday_month(self, obj):
         if obj.birthday_date:
             return obj.birthday_date.month
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    """Сериализация изображений."""
-
-    image_link = Base64ImageField(required=False)
-
-    class Meta:
-        fields = ('image_link',)
-        model = Image
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -120,12 +120,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     Serializer for user update.
     """
 
-    photo = Base64ImageField(required=False, allow_null=True)
+    photo = ImageSerializer(required=False, allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = (
-            'first_name', 'last_name', 'middle_name', 'job_title',
+            'id', 'first_name', 'last_name', 'middle_name', 'job_title',
             'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_date',
             'bio', 'photo'

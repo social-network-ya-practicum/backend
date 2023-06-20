@@ -6,6 +6,9 @@ on:
       - opened
       - synchronize
       - closed
+  push:
+    branches:
+      - 'main'
 
 jobs:
   tests:
