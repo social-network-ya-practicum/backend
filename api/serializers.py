@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for users endpoint.
     """
-
+    email = serializers.CharField(read_only=True)
     photo = Base64ImageField(required=False, allow_null=True)
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
@@ -34,8 +34,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'id', 'first_name', 'last_name', 'middle_name', 'job_title',
-            'personal_email', 'corporate_phone_number',
+            'id', 'email', 'first_name', 'last_name', 'middle_name',
+            'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
         )
@@ -119,14 +119,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for user update.
     """
-
+    email = serializers.CharField(read_only=True)
     photo = HybridImageField(required=False, allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = (
-            'id', 'first_name', 'last_name', 'middle_name', 'job_title',
-            'personal_email', 'corporate_phone_number',
+            'id', 'email', 'first_name', 'last_name', 'middle_name',
+            'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_date',
             'bio', 'photo'
         )
@@ -200,10 +200,11 @@ class AddressBookSerializer(serializers.ModelSerializer):
     """
     Serializer for addressbook.
     """
+    email = serializers.CharField(read_only=True)
 
     class Meta:
         model = CustomUser
         fields = (
-            'id', 'first_name', 'middle_name', 'last_name', 'job_title',
-            'email', 'corporate_phone_number', 'photo'
+            'id', 'email', 'first_name', 'middle_name', 'last_name',
+            'job_title', 'corporate_phone_number', 'photo'
         )
