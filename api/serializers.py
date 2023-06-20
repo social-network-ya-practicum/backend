@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField
+from drf_extra_fields.fields import Base64ImageField, HybridImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -27,14 +27,14 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for users endpoint.
     """
 
-    photo = ImageSerializer(required=False, allow_null=True)
+    photo = Base64ImageField(required=False, allow_null=True)
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
         fields = (
-            'email', 'first_name', 'last_name', 'middle_name', 'job_title',
+            'id', 'first_name', 'last_name', 'middle_name', 'job_title',
             'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
@@ -120,7 +120,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     Serializer for user update.
     """
 
-    photo = ImageSerializer(required=False, allow_null=True)
+    photo = HybridImageField(required=False, allow_null=True)
 
     class Meta:
         model = CustomUser
