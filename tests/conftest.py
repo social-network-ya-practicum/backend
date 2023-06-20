@@ -1,9 +1,7 @@
 from datetime import datetime
 
 import pytest
-
 from rest_framework.test import APIClient
-
 from users.models import CustomUser
 
 

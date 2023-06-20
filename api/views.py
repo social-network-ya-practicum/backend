@@ -1,28 +1,24 @@
-from calendar import monthrange
-from datetime import datetime
+import datetime as dt
 
-from django.db.models import IntegerField, Value
+from django.db.models import IntegerField, Q, Value
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from posts.models import Post
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
-from posts.models import Post
 from users.models import CustomUser
 
-from .filters import filter_birthday
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .pagination import AddressBookSetPagination
 from .permissions import IsUserOrReadOnly
-from .serializers import (
-    AddressBookSerializer, BirthdaySerializer, ChangePasswordSerializer,
-    CreateCustomUserSerializer, PostSerializer, ShortInfoSerializer,
-    UserSerializer, UserUpdateSerializer,
-)
+from .serializers import (AddressBookSerializer, BirthdaySerializer,
+                          ChangePasswordSerializer, CreateCustomUserSerializer,
+                          PostSerializer, ShortInfoSerializer, UserSerializer,
+                          UserUpdateSerializer)
 from .utils import del_images
 
 
@@ -164,44 +160,24 @@ class ShortInfoView(viewsets.ReadOnlyModelViewSet):
 class BirthdayList(ListAPIView):
     """Сериалайзер для дней рождения"""
     serializer_class = BirthdaySerializer
+    pagination_class = None
 
     def get_queryset(self):
-        today = datetime.now().date()
-        current_day = today.day
-        current_month = today.month
-        current_year = today.year
-        next_month = today.month + 1
-        day_one = 30
-        day_two = 31
-        amount_day = monthrange(current_year, current_month)[1]
-        """Если февраль високосный год"""
-        if current_month == 2 and amount_day == 29:
-            return filter_birthday(current_day,
-                                   current_month,
-                                   next_month,
-                                   day_one - 2,
-                                   day_two - 2)
-        """Если февраль невисокосный год"""
-        if current_month == 2 and amount_day == 28:
-            return filter_birthday(current_day,
-                                   current_month,
-                                   next_month,
-                                   day_one - 3,
-                                   day_two - 3)
-        """Нечетный месяц"""
-        if current_month % 2 != 0:
-            return filter_birthday(current_day,
-                                   current_month,
-                                   next_month,
-                                   day_one,
-                                   day_two)
-        """Четный месяц"""
-        if current_month % 2 == 0:
-            return filter_birthday(current_day,
-                                   current_month,
-                                   next_month,
-                                   day_one - 1,
-                                   day_two - 1)
+        today = dt.datetime.today().date()
+        max_day = today + dt.timedelta(days=3)
+        if max_day.month != today.month:
+            print(type(CustomUser.objects.get(id=1).birthday_date))
+            return (CustomUser.objects.filter(
+                Q(birthday_date__month=max_day.month,
+                  birthday_date__day__lte=max_day.day)
+                | (Q(birthday_date__month=today.month,
+                   birthday_date__day__gte=today.day))
+            )).order_by('birthday_date__month', 'birthday_date__day')[:3]
+        return (CustomUser.objects.filter(
+            Q(birthday_date__month=today.month,
+              birthday_date__day__lte=max_day.day,
+              birthday_date__day__gte=today.day)
+        )).order_by('birthday_date__month', 'birthday_date__day')[:3]
 
 
 class AddressBookView(ListAPIView):
