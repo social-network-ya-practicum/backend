@@ -184,7 +184,7 @@ class BirthdayList(ListAPIView):
 class AddressBookView(ListAPIView):
     """Create address book view."""
 
-    queryset = CustomUser.objects.all().order_by('last_name')
+    queryset = CustomUser.objects.all().order_by('last_name', 'id')
     serializer_class = AddressBookSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = AddressBookSetPagination
