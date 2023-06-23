@@ -42,7 +42,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     birthday_date = models.DateField(
         _('День рождения'), blank=True, null=True,
-        help_text=_('Формат: ГГГГ-ММ-ДД')
+        help_text=_('Формат: ГГГГ-ММ-ДД/ДД.ММ.ГГГГ')
     )
     bio = models.TextField(
         _('Биография'), max_length=500, blank=True, null=True,
