@@ -19,10 +19,6 @@ def del_images(post):
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
-    #print(response.data)
-    # if response is not None:
-    #     response.data = {'error': response.data.get('detail', exc.detail)}
-    # return response
     try:
         response.data = {'error': response.data.get('detail', exc.detail)}
     except Exception:
