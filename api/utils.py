@@ -1,7 +1,8 @@
 import os
 
-from config.settings import BASE_DIR, MEDIA_URL
 from rest_framework.views import exception_handler
+
+from config.settings import BASE_DIR, MEDIA_URL
 
 
 def del_images(post):
