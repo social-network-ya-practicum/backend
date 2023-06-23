@@ -86,8 +86,8 @@ class PostSerializer(serializers.ModelSerializer):
             post.save()
             self.create_images(post, images)
             return post
-        else:
-            return super().create(validate_data)
+
+        return super().create(validate_data)
 
     @transaction.atomic()
     def update(self, instance, validate_data):
@@ -98,8 +98,8 @@ class PostSerializer(serializers.ModelSerializer):
             Image.objects.filter(post=instance).delete()
             self.create_images(instance, images)
             return instance
-        else:
-            return super().update(instance, validate_data)
+
+        return super().update(instance, validate_data)
 
 
 class ChangePasswordSerializer(serializers.Serializer):
