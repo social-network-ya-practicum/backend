@@ -2,21 +2,32 @@ from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField
+from drf_extra_fields.fields import Base64ImageField, HybridImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from api.utils import del_images
 from posts.models import Image, Post
 
+
 CustomUser = get_user_model()
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    """Сериализация изображений."""
+
+    image_link = Base64ImageField(required=False)
+
+    class Meta:
+        fields = ('image_link',)
+        model = Image
 
 
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for users endpoint.
     """
-
+    email = serializers.CharField(read_only=True)
     photo = Base64ImageField(required=False, allow_null=True)
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
@@ -24,8 +35,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'email', 'first_name', 'last_name', 'middle_name', 'job_title',
-            'personal_email', 'corporate_phone_number',
+            'id', 'email', 'first_name', 'last_name', 'middle_name',
+            'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
         )
@@ -37,16 +48,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_birthday_month(self, obj):
         if obj.birthday_date:
             return obj.birthday_date.month
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    """Сериализация изображений."""
-
-    image_link = Base64ImageField(required=False)
-
-    class Meta:
-        fields = ('image_link',)
-        model = Image
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -68,32 +69,38 @@ class PostSerializer(serializers.ModelSerializer):
         return obj_post.users_like.count()
 
     @staticmethod
-    def create_images(images, post):
+    def create_images(post, images):
         """Сохраняет картинки к посту."""
         objs_image = (
             Image(
                 post=post,
                 image_link=image.get('image_link')
-            ) for image in images
+            ) for image in images if image
         )
         Image.objects.bulk_create(objs_image)
 
     @transaction.atomic
     def create(self, validate_data):
-        images = validate_data.pop('images')
-        post = Post(**validate_data)
-        post.save()
-        self.create_images(images, post)
-        return post
+        if 'images' in validate_data:
+            images = validate_data.pop('images')
+            post = Post(**validate_data)
+            post.save()
+            self.create_images(post, images)
+            return post
+
+        return super().create(validate_data)
 
     @transaction.atomic()
     def update(self, instance, validate_data):
-        images = validate_data.pop('images')
-        super().update(instance, validate_data)
-        del_images(instance)
-        Image.objects.filter(post=instance).delete()
-        self.create_images(images, instance)
-        return instance
+        if 'images' in validate_data:
+            images = validate_data.pop('images')
+            super().update(instance, validate_data)
+            del_images(instance)
+            Image.objects.filter(post=instance).delete()
+            self.create_images(instance, images)
+            return instance
+
+        return super().update(instance, validate_data)
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -119,14 +126,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for user update.
     """
-
-    photo = Base64ImageField(required=False, allow_null=True)
+    email = serializers.CharField(read_only=True)
+    photo = HybridImageField(required=False, allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = (
-            'first_name', 'last_name', 'middle_name', 'job_title',
-            'personal_email', 'corporate_phone_number',
+            'id', 'email', 'first_name', 'last_name', 'middle_name',
+            'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_date',
             'bio', 'photo'
         )
@@ -200,10 +207,11 @@ class AddressBookSerializer(serializers.ModelSerializer):
     """
     Serializer for addressbook.
     """
+    email = serializers.CharField(read_only=True)
 
     class Meta:
         model = CustomUser
         fields = (
-            'id', 'first_name', 'middle_name', 'last_name', 'job_title',
-            'email', 'corporate_phone_number', 'photo'
+            'id', 'email', 'first_name', 'middle_name', 'last_name',
+            'job_title', 'corporate_phone_number', 'photo'
         )
