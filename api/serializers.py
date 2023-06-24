@@ -69,32 +69,38 @@ class PostSerializer(serializers.ModelSerializer):
         return obj_post.users_like.count()
 
     @staticmethod
-    def create_images(images, post):
+    def create_images(post, images):
         """Сохраняет картинки к посту."""
         objs_image = (
             Image(
                 post=post,
                 image_link=image.get('image_link')
-            ) for image in images
+            ) for image in images if image
         )
         Image.objects.bulk_create(objs_image)
 
     @transaction.atomic
     def create(self, validate_data):
-        images = validate_data.pop('images')
-        post = Post(**validate_data)
-        post.save()
-        self.create_images(images, post)
-        return post
+        if 'images' in validate_data:
+            images = validate_data.pop('images')
+            post = Post(**validate_data)
+            post.save()
+            self.create_images(post, images)
+            return post
+
+        return super().create(validate_data)
 
     @transaction.atomic()
     def update(self, instance, validate_data):
-        images = validate_data.pop('images')
-        super().update(instance, validate_data)
-        del_images(instance)
-        Image.objects.filter(post=instance).delete()
-        self.create_images(images, instance)
-        return instance
+        if 'images' in validate_data:
+            images = validate_data.pop('images')
+            super().update(instance, validate_data)
+            del_images(instance)
+            Image.objects.filter(post=instance).delete()
+            self.create_images(instance, images)
+            return instance
+
+        return super().update(instance, validate_data)
 
 
 class ChangePasswordSerializer(serializers.Serializer):
