@@ -2,12 +2,20 @@ from http import HTTPStatus
 
 import pytest
 
+from posts.models import Post
+
 
 @pytest.mark.django_db(transaction=True)
 class TestPostsAPI:
     post_url = '/api/v1/posts/'
     post_detail_url = '/api/v1/posts/{id}/'
     post_like_url = '/api/v1/posts/{id}/like/'
+
+    def check_post_data(self, response_data, url):
+        response_post_fields = (
+
+        )
+
 
     def test_post_list_not_found(self, client):
         response = client.get(self.post_url)
@@ -51,6 +59,12 @@ class TestPostsAPI:
             'GET-запрос авторизованного пользователя к '
             f'{self.post_url} должен возвращать список.'
         )
+
+        assert len(data) == Post.objects.count(), (
+            'GET-запрос авторизованного пользователя к '
+            f'{self.post_url} вернул не все посты.'
+        )
+    #     проверить поля
 
     def test_post_not_auth(self, client, post_1):
         response = client.get(self.post_detail_url.format(id=post_1.id))
