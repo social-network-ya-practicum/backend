@@ -275,7 +275,9 @@ class TestPostsAPI:
         self.check_post_data(data, f'PUT-запрос к {self.post_detail_url}')
 
     def test_post_delete_auth(self, user_client, post_1):
-        response = user_client.delete(self.post_detail_url.format(id=post_1.id))
+        response = user_client.delete(
+            self.post_detail_url.format(id=post_1.id)
+        )
 
         assert response.status_code == HTTPStatus.NO_CONTENT, (
             'DELETE-запрос авторизованного пользователя к '
