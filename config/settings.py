@@ -1,4 +1,5 @@
 import os
+import locale
 
 from dotenv import load_dotenv
 
@@ -8,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='secret_django_key'),
 
-CSRF_TRUSTED_ORIGINS = ["https://csn.sytes.net"]
+CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS')]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -16,9 +17,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+
+locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -120,6 +123,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    'EXCEPTION_HANDLER': 'api.utils.custom_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
 }
 
 DJOSER = {
