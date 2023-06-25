@@ -1,5 +1,4 @@
 import os
-# import locale
 
 from dotenv import load_dotenv
 
