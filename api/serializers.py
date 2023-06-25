@@ -128,25 +128,35 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
     email = serializers.CharField(read_only=True)
     photo = HybridImageField(required=False, allow_null=True)
+    birthday_day = serializers.IntegerField(allow_null=True)
+    birthday_month = serializers.IntegerField(allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = (
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
-            'personal_phone_number', 'birthday_date',
+            'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
         )
 
-    def validate_birthday_date(self, value):
-        today = date.today()
-        if value > today:
+    def validate(self, data):
+        day = data.get('birthday_day')
+        month = data.get('birthday_month')
+        if not day:
+            day = 1
+        if not month:
+            month = 1
+
+        try:
+            bithday_date = date(year=2000, month=month, day=day)
+        except ValueError:
             raise serializers.ValidationError(
-                'Birthday cannot be in the future.'
+                {'message': 'Неверная дата рождения'}
             )
-        if 1929 < value.year > 2011:
-            raise serializers.ValidationError('You are so young or so old.')
-        return value
+
+        data['birthday_date'] = bithday_date
+        return data
 
 
 class CreateCustomUserSerializer(serializers.ModelSerializer):
