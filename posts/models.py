@@ -1,7 +1,11 @@
+import logging
+
 from django.db import models
 
 from config.settings import AUTH_USER_MODEL
 from users.models import CustomUser
+
+logger = logging.getLogger('django.db.backends')
 
 
 class Post(models.Model):
@@ -40,6 +44,20 @@ class Post(models.Model):
     def __str__(self):
         return self.text[:30]
 
+    def save(
+        self, force_insert=False, force_update=False,
+        using=None, update_fields=None
+    ):
+        is_created = False
+        if self.id:
+            logger.info(f'Обновление поста id#{self.id} - "{self.text[:50]}"')
+        else:
+            logger.info(f'Создание поста - "{self.text[:50]}"')
+            is_created = True
+        super().save(force_insert, force_update, using, update_fields)
+        if is_created:
+            logger.info(f'Создан пост id#{self.id}')
+
 
 class Image(models.Model):
     """Модель для изображений к посту."""
@@ -61,3 +79,19 @@ class Image(models.Model):
         verbose_name = 'Изображение'
         verbose_name_plural = 'Изображения'
         ordering = ('-post', 'id',)
+
+    def save(
+        self, force_insert=False, force_update=False,
+        using=None, update_fields=None
+    ):
+        is_created = False
+        if self.id:
+            logger.info(
+                f'Обновление изображения id#{self.id} к посту "{self.post}"'
+            )
+        else:
+            logger.info(f'Создание изображения к посту "{self.post}"')
+            is_created = True
+        super().save(force_insert, force_update, using, update_fields)
+        if is_created:
+            logger.info(f'Создано изображение id#{self.id}')
