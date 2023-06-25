@@ -1,5 +1,4 @@
 import os
-import locale
 
 from dotenv import load_dotenv
 
@@ -21,7 +20,7 @@ DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
-locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
+# locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
