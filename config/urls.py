@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('protected_admin00/', admin.site.urls),
     path('api/v1/', include('api.urls')),
 ]
 
