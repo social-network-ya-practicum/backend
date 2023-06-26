@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='secret_django_key'),
 
-CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS')]
+CSRF_TRUSTED_ORIGINS = ['*']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -18,7 +18,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = ['*']
 
 # locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
 
@@ -103,8 +103,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-CSRF_ENABLED = False
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
