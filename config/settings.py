@@ -18,7 +18,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['https://127.0.0.1', 'https://csn.sytes.net', 'csn.sytes.net']
+ALLOWED_HOSTS = ['*']
 
 # locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
 
