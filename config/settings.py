@@ -20,6 +20,8 @@ DEBUG = os.getenv('DEBUG')
 
 SECURE_SSL_REDIRECT = True
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 ALLOWED_HOSTS = ['*']
 
 # locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
