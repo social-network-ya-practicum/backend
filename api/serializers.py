@@ -28,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for users endpoint.
     """
     email = serializers.CharField(read_only=True)
-    photo = Base64ImageField(required=False, allow_null=True)
+    photo = serializers.SerializerMethodField()
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
 
@@ -40,6 +40,10 @@ class UserSerializer(serializers.ModelSerializer):
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
         )
+
+    def get_photo(self, obj):
+        if obj.photo:
+            return f'https://csn.sytes.net/media/{str(obj.photo)}'
 
     def get_birthday_day(self, obj):
         if obj.birthday_date:
