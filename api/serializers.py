@@ -9,7 +9,6 @@ from rest_framework.validators import UniqueValidator
 from api.utils import del_images
 from posts.models import Image, Post
 
-
 CustomUser = get_user_model()
 
 
