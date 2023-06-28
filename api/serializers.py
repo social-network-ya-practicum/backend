@@ -2,13 +2,12 @@ from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField, HybridImageField
+from drf_extra_fields.fields import HybridImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from api.utils import del_images
 from posts.models import Image, Post
-
 
 CustomUser = get_user_model()
 
@@ -16,11 +15,15 @@ CustomUser = get_user_model()
 class ImageSerializer(serializers.ModelSerializer):
     """Сериализация изображений."""
 
-    image_link = Base64ImageField(required=False)
+    image_link = serializers.SerializerMethodField()
 
     class Meta:
         fields = ('image_link',)
         model = Image
+
+    def get_image_link(self, obj):
+        if obj.image_link:
+            return f'https://csn.sytes.net/media/{str(obj.image_link)}'
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for users endpoint.
     """
     email = serializers.CharField(read_only=True)
-    photo = Base64ImageField(required=False, allow_null=True)
+    photo = serializers.SerializerMethodField()
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
 
@@ -40,6 +43,10 @@ class UserSerializer(serializers.ModelSerializer):
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo'
         )
+
+    def get_photo(self, obj):
+        if obj.photo:
+            return f'https://csn.sytes.net/media/{str(obj.photo)}'
 
     def get_birthday_day(self, obj):
         if obj.birthday_date:

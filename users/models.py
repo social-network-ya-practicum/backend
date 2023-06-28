@@ -52,6 +52,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _('Фотография'),
         upload_to='users/photo/', null=True, blank=True
     )
+
     date_joined = models.DateTimeField(
         _('Дата создания аккаунта'), default=timezone.now
     )
