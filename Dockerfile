@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN apt-get update && pip install --upgrade pip && pip install -r /app/requirements.txt --no-cache-dir && apt-get install -y locales && locale-gen ru_RU.UTF-8 && export LC_ALL=ru_RU.UTF-8 && export LANG=ru_RU.UTF-8
+RUN apt-get update && pip install --upgrade pip && pip install -r /app/requirements.txt --no-cache-dir
 
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0:8000" ] 
