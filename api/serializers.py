@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField, HybridImageField
+from drf_extra_fields.fields import HybridImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
