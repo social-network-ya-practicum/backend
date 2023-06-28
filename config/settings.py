@@ -20,8 +20,6 @@ DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
-# locale.setlocale(locale.LC_ALL, "ru_RU.utf8")
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
