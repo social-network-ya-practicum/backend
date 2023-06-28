@@ -16,11 +16,15 @@ CustomUser = get_user_model()
 class ImageSerializer(serializers.ModelSerializer):
     """Сериализация изображений."""
 
-    image_link = Base64ImageField(required=False)
+    image_link = serializers.SerializerMethodField()
 
     class Meta:
         fields = ('image_link',)
         model = Image
+
+    def get_image_link(self, obj):
+        if obj.image_link:
+            return f'https://csn.sytes.net/media/{str(obj.image_link)}'
 
 
 class UserSerializer(serializers.ModelSerializer):
