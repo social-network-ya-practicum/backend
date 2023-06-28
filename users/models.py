@@ -52,6 +52,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _('Фотография'),
         upload_to='users/photo/', null=True, blank=True
     )
+
+    def image_url(self):
+        return self.image.url.replace('http://', 'https://')
+
+    def save(self, *args, **kwargs):
+        self.image = self.image_url()
+        super(CustomUser, self).save(*args, **kwargs)
+
     date_joined = models.DateTimeField(
         _('Дата создания аккаунта'), default=timezone.now
     )
