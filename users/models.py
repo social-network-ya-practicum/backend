@@ -80,13 +80,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         'password'
     ]
 
-    def image_url(self):
-        return self.image.url.replace('http://', 'https://')
-
-    def save(self, *args, **kwargs):
-        self.image = self.image_url()
-        super(CustomUser, self).save(*args, **kwargs)
-
     class Meta:
         ordering = ('-date_joined',)
         verbose_name = 'Пользователь'
