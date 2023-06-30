@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
@@ -5,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 from api.managers import CustomUserManager
+
+logger = logging.getLogger('django.db.backends')
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -42,7 +46,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     birthday_date = models.DateField(
         _('День рождения'), blank=True, null=True,
-        help_text=_('Формат: ГГГГ-ММ-ДД')
+        help_text=_('Формат: ГГГГ-ММ-ДД/ДД.ММ.ГГГГ')
     )
     bio = models.TextField(
         _('Биография'), max_length=500, blank=True, null=True,
@@ -52,6 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _('Фотография'),
         upload_to='users/photo/', null=True, blank=True
     )
+
     date_joined = models.DateTimeField(
         _('Дата создания аккаунта'), default=timezone.now
     )
@@ -86,3 +91,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def save(
+        self, force_insert=False, force_update=False,
+        using=None, update_fields=None
+    ):
+        if self.id:
+            logger.info(f'Обновление пользователя - "{self.email}"')
+        else:
+            logger.info(f'Создание пользователя - "{self.email}"')
+        super().save(force_insert, force_update, using, update_fields)
