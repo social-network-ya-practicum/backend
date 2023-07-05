@@ -53,7 +53,10 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if request.method == 'DELETE':
             post.users_like.remove(request.user)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            serializer = PostSerializer(instance=post)
+            return Response(
+                data=serializer.data, status=status.HTTP_204_NO_CONTENT
+            )
 
         return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
 
