@@ -29,10 +29,10 @@ class RequestLogMiddleware:
         response = self.get_response(request)
         response_status = getattr(response, 'status_code', None)
         log_data['response_status'] = response_status
-        if response and response['content-type'] == 'application/json':
-            response_body = json.loads(response.content.decode('utf-8'))
-            log_data['response_body'] = response_body
-        log_data['run_time'] = time.time() - start_time
+        # if response and response['content-type'] == 'application/json':
+        #     response_body = json.loads(response.content.decode('utf-8'))
+        #     log_data['response_body'] = response_body
+        # log_data['run_time'] = time.time() - start_time
         if response_status is not None and response_status >= 400:
             request_logger.error(msg=log_data)
         else:
