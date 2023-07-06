@@ -55,7 +55,8 @@ class PostViewSet(viewsets.ModelViewSet):
             post.users_like.remove(request.user)
             serializer = PostSerializer(instance=post)
             return Response(
-                data=serializer.data, status=status.HTTP_204_NO_CONTENT
+                data=serializer.data,
+                status=status.HTTP_200_OK
             )
 
         return Response(status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -1,5 +1,5 @@
 import socket
-import time
+# import time
 import json
 import logging
 
@@ -13,7 +13,7 @@ class RequestLogMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        start_time = time.time()
+        # start_time = time.time()
         log_data = {
             'remote_address': request.META['REMOTE_ADDR'],
             'server_hostname': socket.gethostname(),
@@ -29,10 +29,10 @@ class RequestLogMiddleware:
         response = self.get_response(request)
         response_status = getattr(response, 'status_code', None)
         log_data['response_status'] = response_status
-        if response and response['content-type'] == 'application/json':
-            response_body = json.loads(response.content.decode('utf-8'))
-            log_data['response_body'] = response_body
-        log_data['run_time'] = time.time() - start_time
+        # if response and response['content-type'] == 'application/json':
+        #     response_body = json.loads(response.content.decode('utf-8'))
+        #     log_data['response_body'] = response_body
+        # log_data['run_time'] = time.time() - start_time
         if response_status is not None and response_status >= 400:
             request_logger.error(msg=log_data)
         else:
