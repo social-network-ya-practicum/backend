@@ -1,6 +1,11 @@
 from django.contrib import admin
+from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
 
-from posts.models import Image, Post
+from posts.models import Image, Post, Comment
+
+admin.site.site_title = 'Корпоративная сеть'
+admin.site.site_header = 'Корпоративная сеть'
+admin.site.index_title = 'Администрирование'
 
 
 class ImageInline(admin.TabularInline):
@@ -13,18 +18,24 @@ class ImageInline(admin.TabularInline):
 class PostAdmin(admin.ModelAdmin):
     """Класс для работы с постами в админ-панели."""
 
-    list_display = ('pk', 'text', 'author', 'pub_date', 'update_date', )
-    search_fields = ('text',)
-    list_filter = ('pub_date',)
-    inlines = (ImageInline,)
-    add_fieldsets = (
-        (None, {'fields': ('count_likes', ), }),
+    list_display = (
+        'pk', 'author', 'text', 'pub_date', 'update_date', 'get_likes_count',
     )
+    list_display_links = ('author',)
+    search_fields = ('text',)
+    list_filter = ('pub_date', 'author')
+    ordering = ('-pub_date',)
+    inlines = (ImageInline,)
+    empty_value_display = '-пусто-'
+    list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
 
-    def count_likes(self, obj):
+    @admin.display(description='Количество лайков')
+    def get_likes_count(self, obj):
         return obj.users_like.count()
 
-    count_likes.short_description = 'Количество лайков'
+    @admin.display(description='Количество комментов')
+    def get_comments_count(self, obj):
+        return obj.comments.count()
 
 
 @admin.register(Image)
@@ -33,3 +44,14 @@ class ImageAdmin(admin.ModelAdmin):
 
     list_display = ('pk', 'image_link', 'post',)
     search_fields = ('post',)
+
+
+@admin.register(Comment)
+class CommentsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'author', 'text', 'post', 'pub_date')
+    list_display_links = ('author',)
+    search_fields = ('text',)
+    list_filter = ('pub_date', 'author')
+    ordering = ('-pub_date',)
+    empty_value_display = '-пусто-'
+    list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL

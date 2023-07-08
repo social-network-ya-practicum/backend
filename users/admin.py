@@ -1,16 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
+from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
 from .models import CustomUser
 
 
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
-        'id', 'email', 'first_name', 'last_name', 'birthday_date',
-        'corporate_phone_number'
+        'id', 'email', 'first_name', 'last_name', 'middle_name',
+        'birthday_date', 'corporate_phone_number', 'job_title',
+        'get_likes_count', 'get_posts_count',
     )
-    list_filter = ('email', 'first_name', 'last_name')
+    list_filter = ('date_joined', 'last_name')
+    list_display_links = ('email',)
     fieldsets = (
         (None, {'fields': (
             'email', 'first_name', 'last_name',
@@ -30,10 +34,17 @@ class CustomUserAdmin(UserAdmin):
                 'photo', 'is_staff', 'is_active')}),
     )
     search_fields = (
-        'email', 'first_name', 'last_name', 'birthday_date',
+        'email', 'first_name', 'middle_name', 'last_name', 'birthday_date',
         'corporate_phone_number'
     )
-    ordering = ('email',)
+    ordering = ('-date_joined',)
+    list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
+    empty_value_display = '-пусто-'
 
+    @admin.display(description='Количество лайков')
+    def get_likes_count(self, obj):
+        return obj.posts_liked.count()
 
-admin.site.register(CustomUser, CustomUserAdmin)
+    @admin.display(description='Количество постов')
+    def get_posts_count(self, obj):
+        return obj.posts.count()
