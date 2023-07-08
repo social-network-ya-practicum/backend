@@ -24,16 +24,7 @@ class AbstractBaseModel(models.Model):
         return self.text[:LIMIT_CHARS]
 
 
-class LikeMixin(models.Model):
-    like = models.ManyToManyField(
-        CustomUser,
-        verbose_name='Лайки',
-        related_name='likes',
-        blank=True
-    )
-
-
-class Post(AbstractBaseModel, LikeMixin):
+class Post(AbstractBaseModel):
     """Модель поста."""
 
     author = models.ForeignKey(
@@ -41,6 +32,12 @@ class Post(AbstractBaseModel, LikeMixin):
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='posts',
+    )
+    like = models.ManyToManyField(
+        CustomUser,
+        verbose_name='Лайки',
+        related_name='posts_likes',
+        blank=True
     )
 
     class Meta:
@@ -61,6 +58,33 @@ class Post(AbstractBaseModel, LikeMixin):
         super().save(force_insert, force_update, using, update_fields)
         if is_created:
             logger.info(f'Создан пост id#{self.id}')
+
+
+class Comment(AbstractBaseModel):
+    text = models.TextField(max_length=500)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        verbose_name='Пост',
+        related_name='comments',
+    )
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
+    like = models.ManyToManyField(
+        CustomUser,
+        verbose_name='Лайки',
+        related_name='comments_likes',
+        blank=True
+    )
+
+    class Meta:
+        ordering = ('pub_date', 'id')
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
 
 class Image(models.Model):
@@ -99,24 +123,3 @@ class Image(models.Model):
         super().save(force_insert, force_update, using, update_fields)
         if is_created:
             logger.info(f'Создано изображение id#{self.id}')
-
-
-class Comment(AbstractBaseModel, LikeMixin):
-    text = models.TextField(max_length=500)
-    post = models.ForeignKey(
-        Post,
-        on_delete=models.CASCADE,
-        verbose_name='Пост',
-        related_name='comments',
-    )
-    author = models.ForeignKey(
-        CustomUser,
-        verbose_name='Автор',
-        on_delete=models.CASCADE,
-        related_name='comments',
-    )
-
-    class Meta:
-        ordering = ('pub_date', 'id')
-        verbose_name = 'Комментарий'
-        verbose_name_plural = 'Комментарии'
