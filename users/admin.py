@@ -10,8 +10,9 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
         'id', 'email', 'first_name', 'last_name', 'middle_name',
-        'birthday_date', 'corporate_phone_number', 'job_title',
-        'get_likes_count', 'get_posts_count',
+        'birthday_date', 'job_title', 'get_posts_count', 'get_comments_count',
+        'get_likes_count', 'corporate_phone_number', 'personal_email',
+        'personal_phone_number', 'bio',
     )
     list_filter = ('date_joined', 'last_name')
     list_display_links = ('email',)
@@ -43,8 +44,12 @@ class CustomUserAdmin(UserAdmin):
 
     @admin.display(description='Количество лайков')
     def get_likes_count(self, obj):
-        return obj.posts_liked.count()
+        return obj.posts_liked.count() + obj.comments_likes.count()
 
     @admin.display(description='Количество постов')
     def get_posts_count(self, obj):
         return obj.posts.count()
+
+    @admin.display(description='Количество комментариев')
+    def get_comments_count(self, obj):
+        return obj.comments.count()

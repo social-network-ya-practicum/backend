@@ -33,10 +33,10 @@ class Post(AbstractBaseModel):
         on_delete=models.CASCADE,
         related_name='posts',
     )
-    like = models.ManyToManyField(
+    likes = models.ManyToManyField(
         CustomUser,
         verbose_name='Лайки',
-        related_name='posts_likes',
+        related_name='posts_liked',
         blank=True
     )
 
@@ -61,7 +61,7 @@ class Post(AbstractBaseModel):
 
 
 class Comment(AbstractBaseModel):
-    text = models.TextField(max_length=500)
+    text = models.TextField('Текст', max_length=500)
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,

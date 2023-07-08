@@ -14,14 +14,23 @@ class ImageInline(admin.TabularInline):
     model = Image
 
 
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    """Класс для работы с изображениями в админке."""
+
+    list_display = ('pk', 'image_link', 'post',)
+    search_fields = ('post',)
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     """Класс для работы с постами в админ-панели."""
 
     list_display = (
-        'pk', 'author', 'text', 'pub_date', 'update_date', 'get_likes_count',
+        'pk', 'author', 'text', 'pub_date', 'update_date',
+        'get_likes_count', 'get_comments_count',
     )
-    list_display_links = ('author',)
+    list_display_links = ('text',)
     search_fields = ('text',)
     list_filter = ('pub_date', 'author')
     ordering = ('-pub_date',)
@@ -31,27 +40,25 @@ class PostAdmin(admin.ModelAdmin):
 
     @admin.display(description='Количество лайков')
     def get_likes_count(self, obj):
-        return obj.users_like.count()
+        return obj.likes.count()
 
     @admin.display(description='Количество комментов')
     def get_comments_count(self, obj):
         return obj.comments.count()
 
 
-@admin.register(Image)
-class ImageAdmin(admin.ModelAdmin):
-    """Класс для работы с изображениями в админке."""
-
-    list_display = ('pk', 'image_link', 'post',)
-    search_fields = ('post',)
-
-
 @admin.register(Comment)
 class CommentsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'author', 'text', 'post', 'pub_date')
+    list_display = (
+        'id', 'author', 'text', 'post', 'pub_date', 'get_likes_count',
+    )
     list_display_links = ('author',)
     search_fields = ('text',)
     list_filter = ('pub_date', 'author')
     ordering = ('-pub_date',)
     empty_value_display = '-пусто-'
     list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
+
+    @admin.display(description='Количество лайков')
+    def get_likes_count(self, obj):
+        return obj.like.count()
