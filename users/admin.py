@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
 
 from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
 from .models import CustomUser
@@ -53,3 +54,6 @@ class CustomUserAdmin(UserAdmin):
     @admin.display(description='Количество комментариев')
     def get_comments_count(self, obj):
         return obj.comments.count()
+
+
+admin.site.unregister(Group)

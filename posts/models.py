@@ -24,6 +24,33 @@ class AbstractBaseModel(models.Model):
         return self.text[:LIMIT_CHARS]
 
 
+class Group(models.Model):
+    title = models.CharField('Название', max_length=50)
+    description = models.CharField('Описание', max_length=1000)
+    created_date = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='group',
+        blank=True,
+    )
+    image_link = models.ImageField(
+        'Изображение',
+        upload_to='groups/images/%Y/%m/%d',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'
+        ordering = ('-created_date', '-id',)
+
+    def __str__(self):
+        return self.title[:LIMIT_CHARS]
+
+
 class Post(AbstractBaseModel):
     """Модель поста."""
 
@@ -37,6 +64,13 @@ class Post(AbstractBaseModel):
         CustomUser,
         verbose_name='Лайки',
         related_name='posts_liked',
+        blank=True
+    )
+    group = models.ForeignKey(
+        Group,
+        verbose_name='Группа',
+        related_name='posts_group',
+        on_delete=models.CASCADE,
         blank=True
     )
 
