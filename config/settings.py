@@ -37,14 +37,12 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'djoser',
     'corsheaders',
-<<<<<<< HEAD
+    'drf_standardized_errors',
 
     'users.apps.UsersConfig',
     'posts.apps.PostsConfig',
     'api.apps.ApiConfig',
-=======
-    'drf_standardized_errors',
->>>>>>> main
+
 ]
 
 MIDDLEWARE = [

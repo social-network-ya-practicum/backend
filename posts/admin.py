@@ -46,8 +46,7 @@ class GroupAdmin(admin.ModelAdmin):
     @admin.display(description='Количество комментов')
     def get_comments_count(self, obj):
         posts = obj.posts_group.all()
-        count = Comment.objects.filter(post__in=posts).count()
-        return count
+        return Comment.objects.filter(post__in=posts).count()
 
     @admin.display(description='Количество лайков на постах')
     def get_posts_likes_count(self, obj):

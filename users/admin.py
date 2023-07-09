@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
 from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
+
 from .models import CustomUser
 
 
