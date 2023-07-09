@@ -77,13 +77,13 @@ class CommentsViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, post=self.get_news())
 
-    @action(
-        methods=('DELETE',),
-        detail=True,
-    )
-    def delete_comment(self, request, pk):
-        get_object_or_404(Comment, id=pk).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # @action(
+    #     methods=('DELETE',),
+    #     detail=True,
+    # )
+    # def delete_comment(self, request, pk):
+    #     get_object_or_404(Comment, id=pk).delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         url_path='like',
