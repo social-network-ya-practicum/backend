@@ -67,13 +67,13 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'like_count', 'users_like',
+            'images', 'like_count', 'likes',
         )
         model = Post
 
     def get_like_count(self, obj_post):
         """Вычисляет количество лайков у поста."""
-        return obj_post.users_like.count()
+        return obj_post.likes.count()
 
     @staticmethod
     def create_images(post, images):

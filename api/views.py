@@ -45,14 +45,14 @@ class PostViewSet(viewsets.ModelViewSet):
         """Лайкнуть пост, отменить лайк."""
         post = get_object_or_404(Post, id=pk)
         if request.method == 'POST':
-            post.users_like.add(request.user)
+            post.likes.add(request.user)
             return Response(
                 PostSerializer(post).data,
                 status=status.HTTP_201_CREATED
             )
 
         if request.method == 'DELETE':
-            post.users_like.remove(request.user)
+            post.likes.remove(request.user)
             serializer = PostSerializer(instance=post)
             return Response(
                 data=serializer.data, status=status.HTTP_204_NO_CONTENT
