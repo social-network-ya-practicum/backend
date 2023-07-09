@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from api.v1.utils import del_images
-from posts.models import Image, Post
+from posts.models import Image, Post, Comment
 
 CustomUser = get_user_model()
 
@@ -235,4 +235,13 @@ class AddressBookSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    pass
+    author = UserSerializer(read_only=True)
+    like_count = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
+        model = Comment
+
+    def get_like_count(self, obj):
+        """Вычисляет количество лайков у комментария."""
+        return obj.like.count()

@@ -60,6 +60,51 @@ class PostViewSet(viewsets.ModelViewSet):
         )
 
 
+class CommentsViewSet(ModelViewSet):
+    queryset = Comment.objects.all().select_related(
+        'author', 'post').prefetch_related('like')
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
+
+    def get_news(self):
+        return get_object_or_404(Post, pk=self.kwargs.get('posts_id'))
+
+    def get_queryset(self):
+        return self.get_news().comments.all().select_related(
+            'author', 'post').prefetch_related('like')
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, post=self.get_news())
+
+    @action(
+        methods=('DELETE',),
+        detail=True,
+    )
+    def delete_comment(self, request, pk):
+        get_object_or_404(Comment, id=pk).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        url_path='like',
+        methods=('POST',),
+        detail=True,
+    )
+    def set_like(self, request, pk):
+        comment = get_object_or_404(Comment, id=pk)
+        comment.like.add(request.user)
+        return Response(
+            CommentSerializer(comment).data, status=status.HTTP_201_CREATED
+        )
+
+    @set_like.mapping.delete
+    def delete_like(self, request, pk):
+        comment = get_object_or_404(Comment, id=pk)
+        comment.like.remove(request.user)
+        return Response(
+            CommentSerializer(comment).data, status=status.HTTP_204_NO_CONTENT
+        )
+
+
 class ChangePasswordView(CreateAPIView):
     """Change password view."""
 
@@ -192,26 +237,3 @@ class AddressBookView(ListAPIView):
     pagination_class = AddressBookSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['last_name', 'job_title']
-
-
-class CommentsViewSet(ModelViewSet):
-    queryset = Comment.objects.all().select_related('author', 'news')
-    serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
-
-    def get_news(self):
-        return get_object_or_404(News, pk=self.kwargs.get('news_id'))
-
-    def get_queryset(self):
-        return self.get_news().comments.all().select_related('author', 'news')
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user, news=self.get_news())
-
-    @action(
-        methods=('DELETE',),
-        detail=True,
-    )
-    def delete_comment(self, request, pk):
-        get_object_or_404(Comments, id=pk).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
