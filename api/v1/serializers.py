@@ -60,7 +60,8 @@ class UserSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'id', 'title', 'description', 'created_date', 'author', 'image_link'
+            'id', 'title', 'description',
+            'created_date', 'author', 'image_link'
         )
         model = Group
 
