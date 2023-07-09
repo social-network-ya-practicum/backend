@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from drf_extra_fields.fields import HybridImageField
+from drf_extra_fields.fields import HybridImageField, Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -15,7 +15,7 @@ CustomUser = get_user_model()
 class ImageSerializer(serializers.ModelSerializer):
     """Сериализация изображений."""
 
-    image_link = serializers.SerializerMethodField()
+    image_link = Base64ImageField(required=False)
 
     class Meta:
         fields = ('image_link',)
