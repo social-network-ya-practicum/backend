@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from api.v1.utils import del_images
-from posts.models import Image, Post, Comment
+from posts.models import Image, Post, Comment, Group
 
 CustomUser = get_user_model()
 
@@ -57,17 +57,26 @@ class UserSerializer(serializers.ModelSerializer):
             return obj.birthday_date.month
 
 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'id', 'title', 'description', 'created_date', 'author', 'image_link'
+        )
+        model = Group
+
+
 class PostSerializer(serializers.ModelSerializer):
     """Сериализация модели Post."""
 
     author = UserSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
     images = ImageSerializer(many=True, required=False)
+    group = GroupSerializer(read_only=True)
 
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'like_count', 'likes',
+            'images', 'like_count', 'likes', 'group'
         )
         model = Post
 

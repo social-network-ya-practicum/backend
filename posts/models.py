@@ -71,7 +71,8 @@ class Post(AbstractBaseModel):
         verbose_name='Группа',
         related_name='posts_group',
         on_delete=models.CASCADE,
-        blank=True
+        blank=True,
+        null=True
     )
 
     class Meta:
