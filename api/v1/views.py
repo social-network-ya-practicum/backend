@@ -59,28 +59,6 @@ class PostViewSet(viewsets.ModelViewSet):
             data=PostSerializer(post).data, status=status.HTTP_204_NO_CONTENT
         )
 
-    @action(
-        url_path='like',
-        methods=('POST',),
-        detail=True,
-    )
-    def set_like(self, request, pk):
-        """Лайкнуть пост, отменить лайк."""
-        post = get_object_or_404(Post, id=pk)
-        post.likes.add(request.user)
-        return Response(
-            PostSerializer(post).data,
-            status=status.HTTP_201_CREATED
-        )
-
-    @set_like.mapping.delete
-    def delete_like(self, request, pk):
-        post = get_object_or_404(Post, id=pk)
-        post.likes.remove(request.user)
-        return Response(
-            data=PostSerializer(post).data, status=status.HTTP_204_NO_CONTENT
-        )
-
 
 class ChangePasswordView(CreateAPIView):
     """Change password view."""
