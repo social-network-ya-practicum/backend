@@ -7,19 +7,20 @@ from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
-from posts.models import Post
+from posts.models import Post, Comment
 from users.models import CustomUser
-
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .pagination import AddressBookSetPagination
-from .permissions import IsUserOrReadOnly
+from .permissions import IsUserOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (AddressBookSerializer, BirthdaySerializer,
                           ChangePasswordSerializer, CreateCustomUserSerializer,
                           PostSerializer, ShortInfoSerializer, UserSerializer,
-                          UserUpdateSerializer)
+                          UserUpdateSerializer, CommentSerializer)
 from .utils import del_images
 
 
@@ -38,27 +39,47 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(
         url_path='like',
-        methods=['post', 'delete'],
+        methods=('POST',),
         detail=True,
     )
-    def get_like(self, request, pk):
+    def set_like(self, request, pk):
         """Лайкнуть пост, отменить лайк."""
         post = get_object_or_404(Post, id=pk)
-        if request.method == 'POST':
-            post.likes.add(request.user)
-            return Response(
-                PostSerializer(post).data,
-                status=status.HTTP_201_CREATED
-            )
+        post.likes.add(request.user)
+        return Response(
+            PostSerializer(post).data,
+            status=status.HTTP_201_CREATED
+        )
 
-        if request.method == 'DELETE':
-            post.likes.remove(request.user)
-            serializer = PostSerializer(instance=post)
-            return Response(
-                data=serializer.data, status=status.HTTP_204_NO_CONTENT
-            )
+    @set_like.mapping.delete
+    def delete_like(self, request, pk):
+        post = get_object_or_404(Post, id=pk)
+        post.likes.remove(request.user)
+        return Response(
+            data=PostSerializer(post).data, status=status.HTTP_204_NO_CONTENT
+        )
 
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+    @action(
+        url_path='like',
+        methods=('POST',),
+        detail=True,
+    )
+    def set_like(self, request, pk):
+        """Лайкнуть пост, отменить лайк."""
+        post = get_object_or_404(Post, id=pk)
+        post.likes.add(request.user)
+        return Response(
+            PostSerializer(post).data,
+            status=status.HTTP_201_CREATED
+        )
+
+    @set_like.mapping.delete
+    def delete_like(self, request, pk):
+        post = get_object_or_404(Post, id=pk)
+        post.likes.remove(request.user)
+        return Response(
+            data=PostSerializer(post).data, status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class ChangePasswordView(CreateAPIView):
@@ -115,7 +136,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
         return [permission() for permission in permission_classes]
 
     @action(
-        methods=['get'],
+        methods=('GET',),
         detail=False
     )
     def me(self, request):
@@ -124,7 +145,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
         return Response(serializer.data, status.HTTP_200_OK)
 
     @action(
-        methods=['get'],
+        methods=('GET',),
         detail=True
     )
     def posts(self, request, pk=None):
@@ -193,3 +214,26 @@ class AddressBookView(ListAPIView):
     pagination_class = AddressBookSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['last_name', 'job_title']
+
+
+class CommentsViewSet(ModelViewSet):
+    queryset = Comment.objects.all().select_related('author', 'news')
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
+
+    def get_news(self):
+        return get_object_or_404(News, pk=self.kwargs.get('news_id'))
+
+    def get_queryset(self):
+        return self.get_news().comments.all().select_related('author', 'news')
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, news=self.get_news())
+
+    @action(
+        methods=('DELETE',),
+        detail=True,
+    )
+    def delete_comment(self, request, pk):
+        get_object_or_404(Comments, id=pk).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

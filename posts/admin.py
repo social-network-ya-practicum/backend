@@ -1,6 +1,6 @@
 from django.contrib import admin
-from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
 
+from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
 from posts.models import Image, Post, Comment
 
 admin.site.site_title = 'Корпоративная сеть'

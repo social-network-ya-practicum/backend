@@ -42,7 +42,7 @@ class CustomUserAdmin(UserAdmin):
     list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
     empty_value_display = '-пусто-'
 
-    @admin.display(description='Количество лайков')
+    @admin.display(description='Количество лайков посты+комменты')
     def get_likes_count(self, obj):
         return obj.posts_liked.count() + obj.comments_likes.count()
 

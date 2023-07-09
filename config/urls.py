@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 
 urlpatterns = [
     path('protected_admin00/', admin.site.urls),
-    path('api/v1/', include('api.urls')),
+    path('api/v1/', include('api.v1.urls')),
 ]
 
 schema_view = get_schema_view(

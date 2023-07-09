@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from api.managers import CustomUserManager
+from api.v1.managers import CustomUserManager
 
 logger = logging.getLogger('django.db.backends')
 

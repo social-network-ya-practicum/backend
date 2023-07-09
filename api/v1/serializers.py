@@ -6,7 +6,7 @@ from drf_extra_fields.fields import HybridImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from api.utils import del_images
+from api.v1.utils import del_images
 from posts.models import Image, Post
 
 CustomUser = get_user_model()
@@ -232,3 +232,7 @@ class AddressBookSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'middle_name', 'last_name',
             'job_title', 'corporate_phone_number', 'photo'
         )
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    pass
