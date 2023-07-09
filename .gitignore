@@ -7,7 +7,7 @@ __pycache__/
 *.so
 .idea/
 static/
-# logs/
+logs/
 media/
 
 # Distribution / packaging
