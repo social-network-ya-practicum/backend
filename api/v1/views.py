@@ -58,7 +58,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post.likes.remove(request.user)
         serializer = PostSerializer(post)
         return Response(
-            data=serializer.data, status=status.HTTP_204_NO_CONTENT
+            data=serializer.data, status=status.HTTP_200_OK
         )
 
 
