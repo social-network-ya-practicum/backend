@@ -63,7 +63,9 @@ class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
     images = ImageSerializer(many=True, required=False)
-    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), required=False)
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(), required=False
+    )
 
     class Meta:
         fields = (
