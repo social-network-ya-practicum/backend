@@ -3,13 +3,16 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (AddressBookView, BirthdayList, ChangePasswordView,
                     CreateUsersViewSet, PostViewSet, ShortInfoView,
-                    UsersViewSet)
+                    UsersViewSet, CommentsViewSet)
 
 app_name = 'api'
 
-router = DefaultRouter()
-router.register(r'posts', PostViewSet, basename='posts')
-router.register(r'users', UsersViewSet, basename='users')
+router_v1 = DefaultRouter()
+router_v1.register(r'posts', PostViewSet, basename='posts')
+router_v1.register(r'users', UsersViewSet, basename='users')
+router_v1.register(
+    r'posts/(?P<posts_id>\d+)/comments', CommentsViewSet, basename='comments'
+)
 
 urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
@@ -30,5 +33,5 @@ urlpatterns = [
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
-    path('', include(router.urls)),
+    path('', include(router_v1.urls)),
 ]

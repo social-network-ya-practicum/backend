@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from api.managers import CustomUserManager
+from api.v1.managers import CustomUserManager
 
 logger = logging.getLogger('django.db.backends')
 
@@ -75,6 +75,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             'Указывает возможность пользователя войти на портал. '
             'Снимите чекбокс вместо удаления учетной записи.'
         ),
+    )
+    department = models.CharField(
+        'Подразделение',
+        max_length=50,
+        blank=True,
+        null=True
     )
 
     objects = CustomUserManager()

@@ -7,19 +7,21 @@ from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
-from posts.models import Post
+from posts.models import Post, Comment
 from users.models import CustomUser
 
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .pagination import AddressBookSetPagination
-from .permissions import IsUserOrReadOnly
+from .permissions import IsUserOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (AddressBookSerializer, BirthdaySerializer,
                           ChangePasswordSerializer, CreateCustomUserSerializer,
                           PostSerializer, ShortInfoSerializer, UserSerializer,
-                          UserUpdateSerializer)
+                          UserUpdateSerializer, CommentSerializer)
 from .utils import del_images
 
 
@@ -38,28 +40,63 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(
         url_path='like',
-        methods=['post', 'delete'],
+        methods=('POST',),
         detail=True,
     )
-    def get_like(self, request, pk):
+    def set_like(self, request, pk):
         """Лайкнуть пост, отменить лайк."""
         post = get_object_or_404(Post, id=pk)
-        if request.method == 'POST':
-            post.users_like.add(request.user)
-            return Response(
-                PostSerializer(post).data,
-                status=status.HTTP_201_CREATED
-            )
+        post.likes.add(request.user)
+        serializer = PostSerializer(post)
+        return Response(
+            data=serializer.data, status=status.HTTP_201_CREATED
+        )
 
-        if request.method == 'DELETE':
-            post.users_like.remove(request.user)
-            serializer = PostSerializer(instance=post)
-            return Response(
-                data=serializer.data,
-                status=status.HTTP_200_OK
-            )
+    @set_like.mapping.delete
+    def delete_like(self, request, pk):
+        post = get_object_or_404(Post, id=pk)
+        post.likes.remove(request.user)
+        serializer = PostSerializer(post)
+        return Response(
+            data=serializer.data, status=status.HTTP_200_OK
+        )
 
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+
+class CommentsViewSet(ModelViewSet):
+    queryset = Comment.objects.all().select_related(
+        'author', 'post').prefetch_related('like')
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
+
+    def get_news(self):
+        return get_object_or_404(Post, pk=self.kwargs.get('posts_id'))
+
+    def get_queryset(self):
+        return self.get_news().comments.all().select_related(
+            'author', 'post').prefetch_related('like')
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, post=self.get_news())
+
+    @action(
+        url_path='like',
+        methods=('POST',),
+        detail=True,
+    )
+    def set_like(self, request, pk):
+        comment = get_object_or_404(Comment, id=pk)
+        comment.like.add(request.user)
+        return Response(
+            CommentSerializer(comment).data, status=status.HTTP_201_CREATED
+        )
+
+    @set_like.mapping.delete
+    def delete_like(self, request, pk):
+        comment = get_object_or_404(Comment, id=pk)
+        comment.like.remove(request.user)
+        return Response(
+            CommentSerializer(comment).data, status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class ChangePasswordView(CreateAPIView):
@@ -116,7 +153,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
         return [permission() for permission in permission_classes]
 
     @action(
-        methods=['get'],
+        methods=('GET',),
         detail=False
     )
     def me(self, request):
@@ -125,7 +162,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
         return Response(serializer.data, status.HTTP_200_OK)
 
     @action(
-        methods=['get'],
+        methods=('GET',),
         detail=True
     )
     def posts(self, request, pk=None):

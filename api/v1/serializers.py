@@ -6,8 +6,8 @@ from drf_extra_fields.fields import HybridImageField, Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from api.utils import del_images
-from posts.models import Image, Post
+from api.v1.utils import del_images
+from posts.models import Image, Post, Comment, Group
 
 CustomUser = get_user_model()
 
@@ -41,7 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo'
+            'bio', 'photo', 'department',
         )
 
     def get_photo(self, obj):
@@ -63,17 +63,20 @@ class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
     images = ImageSerializer(many=True, required=False)
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(), required=False
+    )
 
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'like_count', 'users_like',
+            'images', 'like_count', 'likes', 'group',
         )
         model = Post
 
     def get_like_count(self, obj_post):
         """Вычисляет количество лайков у поста."""
-        return obj_post.users_like.count()
+        return obj_post.likes.count()
 
     @staticmethod
     def create_images(post, images):
@@ -144,7 +147,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo'
+            'bio', 'photo', 'department',
         )
 
     def validate(self, data):
@@ -232,3 +235,16 @@ class AddressBookSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'middle_name', 'last_name',
             'job_title', 'corporate_phone_number', 'photo'
         )
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    like_count = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
+        model = Comment
+
+    def get_like_count(self, obj):
+        """Вычисляет количество лайков у комментария."""
+        return obj.like.count()

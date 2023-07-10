@@ -2,47 +2,83 @@ import logging
 
 from django.db import models
 
-from config.settings import AUTH_USER_MODEL
 from users.models import CustomUser
 
 logger = logging.getLogger('django.db.backends')
 
+LIMIT_CHARS = 25
 
-class Post(models.Model):
+
+class AbstractBaseModel(models.Model):
+    text = models.TextField('Текст', max_length=2000)
+    pub_date = models.DateField('Дата создания', auto_now=True)
+    update_date = models.DateTimeField(
+        verbose_name='Последнее обновление',
+        auto_now=True,
+    )
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.text[:LIMIT_CHARS]
+
+
+class Group(models.Model):
+    title = models.CharField('Название', max_length=50)
+    description = models.CharField('Описание', max_length=1000)
+    created_date = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='group',
+        blank=True,
+    )
+    image_link = models.ImageField(
+        'Изображение',
+        upload_to='groups/images/%Y/%m/%d',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'
+        ordering = ('-created_date', '-id',)
+
+    def __str__(self):
+        return self.title[:LIMIT_CHARS]
+
+
+class Post(AbstractBaseModel):
     """Модель поста."""
 
-    text = models.TextField(
-        verbose_name='Текст',
-        max_length=40000,
-    )
     author = models.ForeignKey(
         CustomUser,
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='posts',
     )
-    pub_date = models.DateTimeField(
-        verbose_name='Дата создания',
-        auto_now_add=True,
-    )
-    update_date = models.DateTimeField(
-        verbose_name='Последнее обновление',
-        auto_now=True,
-    )
-
-    users_like = models.ManyToManyField(
-        AUTH_USER_MODEL,
+    likes = models.ManyToManyField(
+        CustomUser,
+        verbose_name='Лайки',
         related_name='posts_liked',
         blank=True
+    )
+    group = models.ForeignKey(
+        Group,
+        verbose_name='Группа',
+        related_name='posts_group',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
     )
 
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
         ordering = ('-pub_date',)
-
-    def __str__(self):
-        return self.text[:30]
 
     def save(
         self, force_insert=False, force_update=False,
@@ -57,6 +93,33 @@ class Post(models.Model):
         super().save(force_insert, force_update, using, update_fields)
         if is_created:
             logger.info(f'Создан пост id#{self.id}')
+
+
+class Comment(AbstractBaseModel):
+    text = models.TextField('Текст', max_length=500)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        verbose_name='Пост',
+        related_name='comments',
+    )
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
+    like = models.ManyToManyField(
+        CustomUser,
+        verbose_name='Лайки',
+        related_name='comments_likes',
+        blank=True
+    )
+
+    class Meta:
+        ordering = ('pub_date', 'id')
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
 
 class Image(models.Model):
