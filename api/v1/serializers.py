@@ -41,7 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo'
+            'bio', 'photo', 'department',
         )
 
     def get_photo(self, obj):
@@ -70,7 +70,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'like_count', 'likes', 'group'
+            'images', 'like_count', 'likes', 'group',
         )
         model = Post
 
@@ -147,7 +147,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo'
+            'bio', 'photo', 'department',
         )
 
     def validate(self, data):

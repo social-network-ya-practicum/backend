@@ -76,6 +76,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             'Снимите чекбокс вместо удаления учетной записи.'
         ),
     )
+    department = models.CharField(
+        'Подразделение',
+        max_length=50,
+        blank=True,
+        null=True
+    )
 
     objects = CustomUserManager()
 

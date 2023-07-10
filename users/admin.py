@@ -12,18 +12,18 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
         'id', 'email', 'first_name', 'last_name', 'middle_name',
-        'birthday_date', 'job_title', 'get_posts_count', 'get_comments_count',
-        'get_likes_count', 'corporate_phone_number', 'personal_email',
-        'personal_phone_number', 'bio',
+        'birthday_date', 'job_title', 'department', 'get_posts_count',
+        'get_comments_count', 'get_likes_count', 'corporate_phone_number',
+        'personal_email', 'personal_phone_number', 'bio',
     )
-    list_filter = ('date_joined', 'last_name')
+    list_filter = ('date_joined', 'last_name', 'department',)
     list_display_links = ('email',)
     fieldsets = (
         (None, {'fields': (
             'email', 'first_name', 'last_name',
-            'middle_name', 'birthday_date', 'job_title', 'personal_email',
-            'corporate_phone_number', 'personal_phone_number', 'bio',
-            'photo'
+            'middle_name', 'birthday_date', 'job_title', 'department',
+            'personal_email', 'corporate_phone_number',
+            'personal_phone_number', 'bio', 'photo'
         )}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
@@ -32,13 +32,14 @@ class CustomUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': (
                 'email', 'password1', 'password2', 'first_name', 'last_name',
-                'middle_name', 'birthday_date', 'job_title', 'personal_email',
-                'corporate_phone_number', 'personal_phone_number', 'bio',
-                'photo', 'is_staff', 'is_active')}),
+                'middle_name', 'birthday_date', 'job_title', 'department',
+                'personal_email', 'corporate_phone_number',
+                'personal_phone_number', 'bio', 'photo', 'is_staff',
+                'is_active')}),
     )
     search_fields = (
         'email', 'first_name', 'middle_name', 'last_name', 'birthday_date',
-        'corporate_phone_number'
+        'corporate_phone_number', 'department',
     )
     ordering = ('-date_joined',)
     list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
