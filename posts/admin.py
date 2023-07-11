@@ -29,8 +29,8 @@ class GroupAdmin(admin.ModelAdmin):
 
     list_display = (
         'pk', 'title', 'author', 'description', 'created_date',
-        'get_posts_count', 'get_comments_count', 'get_posts_likes_count',
-        'get_comments_likes_count',
+        'get_followers_count', 'get_posts_count', 'get_comments_count',
+        'get_posts_likes_count', 'get_comments_likes_count',
     )
     list_display_links = ('title',)
     search_fields = ('title', 'description', 'author')
@@ -38,6 +38,10 @@ class GroupAdmin(admin.ModelAdmin):
     ordering = ('-created_date',)
     empty_value_display = '-пусто-'
     list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
+
+    @admin.display(description='Количество подписчиков')
+    def get_followers_count(self, obj):
+        return obj.followers.count()
 
     @admin.display(description='Количество постов')
     def get_posts_count(self, obj):
