@@ -12,16 +12,17 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from posts.models import Post, Comment
+from posts.models import Comment, Post
 from users.models import CustomUser
 
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .pagination import AddressBookSetPagination
-from .permissions import IsUserOrReadOnly, IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from .serializers import (AddressBookSerializer, BirthdaySerializer,
-                          ChangePasswordSerializer, CreateCustomUserSerializer,
-                          PostSerializer, ShortInfoSerializer, UserSerializer,
-                          UserUpdateSerializer, CommentSerializer)
+                          ChangePasswordSerializer, CommentSerializer,
+                          CreateCustomUserSerializer, PostSerializer,
+                          ShortInfoSerializer, UserSerializer,
+                          UserUpdateSerializer)
 from .utils import del_images
 
 

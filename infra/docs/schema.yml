@@ -6,6 +6,10 @@ info:
 securityDefinitions:
   Basic:
     type: basic
+consumes:
+- application/json
+produces:
+- application/json
 security:
 - Basic: []
 paths:
@@ -297,25 +301,7 @@ paths:
         '200':
           description: ''
           schema:
-            required:
-            - count
-            - results
-            type: object
-            properties:
-              count:
-                type: integer
-              next:
-                type: string
-                format: uri
-                x-nullable: true
-              previous:
-                type: string
-                format: uri
-                x-nullable: true
-              results:
-                type: array
-                items:
-                  "$ref": "#/definitions/User"
+            "$ref": "#/definitions/User"
       tags:
       - users
     parameters: []
@@ -640,6 +626,11 @@ definitions:
         title: Photo
         type: string
         readOnly: true
+      department:
+        title: Подразделение
+        type: string
+        maxLength: 50
+        x-nullable: true
   Image:
     type: object
     properties:
@@ -820,3 +811,8 @@ definitions:
         readOnly: true
         x-nullable: true
         format: uri
+      department:
+        title: Подразделение
+        type: string
+        maxLength: 50
+        x-nullable: true
