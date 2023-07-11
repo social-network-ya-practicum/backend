@@ -1,9 +1,10 @@
 from django.urls import include, path
+from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
 from .views import (AddressBookView, BirthdayList, ChangePasswordView,
-                    CreateUsersViewSet, PostViewSet, ShortInfoView,
-                    UsersViewSet, CommentsViewSet, GroupViewSet)
+                    CommentsViewSet, CreateUsersViewSet, PostViewSet,
+                    ShortInfoView, UsersViewSet, GroupViewSet)
 
 app_name = 'api'
 
@@ -34,5 +35,9 @@ urlpatterns = [
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
+    path('docs/', TemplateView.as_view(
+        template_name='docs/redoc.html',
+        extra_context={'schema_url': 'openapi-schema'}
+    ), name='swagger-ui'),
     path('', include(router_v1.urls)),
 ]

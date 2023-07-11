@@ -2,7 +2,7 @@ import datetime as dt
 
 from django.db.models import IntegerField, Q, Value
 from django.shortcuts import get_object_or_404
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
@@ -12,16 +12,16 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from posts.models import Post, Comment, Group
+from posts.models import Comment, Post, Group
 from users.models import CustomUser
 
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
-from .permissions import IsUserOrReadOnly, IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from .serializers import (AddressBookSerializer, BirthdaySerializer,
-                          ChangePasswordSerializer, CreateCustomUserSerializer,
-                          PostSerializer, ShortInfoSerializer, UserSerializer,
-                          UserUpdateSerializer, CommentSerializer,
-                          GroupSerializer)
+                          ChangePasswordSerializer, CommentSerializer,
+                          CreateCustomUserSerializer, PostSerializer,
+                          GroupSerializer, ShortInfoSerializer, UserSerializer,
+                          UserUpdateSerializer)
 from .utils import del_images
 
 
