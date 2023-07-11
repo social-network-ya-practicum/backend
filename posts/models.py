@@ -35,6 +35,12 @@ class Group(models.Model):
         related_name='group',
         blank=True,
     )
+    followers = models.ManyToManyField(
+        CustomUser,
+        verbose_name='Подписчики',
+        related_name='followings',
+        blank=True,
+    )
     image_link = models.ImageField(
         'Изображение',
         upload_to='groups/images/%Y/%m/%d',

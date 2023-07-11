@@ -55,4 +55,9 @@ class Migration(migrations.Migration):
             name='post',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='posts.post', verbose_name='Пост'),
         ),
+        migrations.AddField(
+            model_name='group',
+            name='followers',
+            field=models.ManyToManyField(blank=True, related_name='followings', to=settings.AUTH_USER_MODEL, verbose_name='Подписчики'),
+        ),
     ]

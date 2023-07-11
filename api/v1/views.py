@@ -10,18 +10,17 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from posts.models import Comment, Post
+from posts.models import Comment, Post, Group
 from users.models import CustomUser
 
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
-from .pagination import AddressBookSetPagination
 from .permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from .serializers import (AddressBookSerializer, BirthdaySerializer,
                           ChangePasswordSerializer, CommentSerializer,
                           CreateCustomUserSerializer, PostSerializer,
-                          ShortInfoSerializer, UserSerializer,
+                          GroupSerializer, ShortInfoSerializer, UserSerializer,
                           UserUpdateSerializer)
 from .utils import del_images
 
@@ -31,6 +30,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -66,6 +66,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(ModelViewSet):
     queryset = Comment.objects.all().select_related(
         'author', 'post').prefetch_related('like')
+    pagination_class = LimitOffsetPagination
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
 
@@ -185,6 +186,32 @@ class CreateUsersViewSet(CreateViewSet):
     permission_classes = (AllowAny,)
 
 
+class GroupViewSet(ReadOnlyModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    pagination_class = LimitOffsetPagination
+
+    @action(
+        url_path='subscribe',
+        methods=('POST',),
+        detail=True,
+    )
+    def set_subscribe(self, request, pk):
+        group = get_object_or_404(Group, id=pk)
+        group.followers.add(request.user)
+        return Response(
+            GroupSerializer(group).data, status=status.HTTP_201_CREATED
+        )
+
+    @set_subscribe.mapping.delete
+    def delete_subscribe(self, request, pk):
+        group = get_object_or_404(Group, id=pk)
+        group.followers.remove(request.user)
+        return Response(
+            GroupSerializer(group).data, status=status.HTTP_200_OK
+        )
+
+
 class ShortInfoView(viewsets.ReadOnlyModelViewSet):
     """Short info about user."""
 
@@ -229,6 +256,6 @@ class AddressBookView(ListAPIView):
     queryset = CustomUser.objects.all().order_by('last_name', 'id')
     serializer_class = AddressBookSerializer
     permission_classes = (IsAuthenticated,)
-    pagination_class = AddressBookSetPagination
+    pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['last_name', 'job_title']

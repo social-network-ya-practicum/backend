@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from drf_extra_fields.fields import HybridImageField, Base64ImageField
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
 from api.v1.utils import del_images
@@ -121,6 +122,22 @@ class ChangePasswordSerializer(serializers.Serializer):
     model = CustomUser
     new_password = serializers.CharField(required=True)
     current_password = serializers.CharField(required=True)
+
+
+class GroupSerializer(serializers.Serializer):
+    author = SlugRelatedField(slug_field='id', read_only=True)
+    title = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    followers_count = serializers.ReadOnlyField(source='followers.count')
+    created_date = serializers.DateTimeField()
+    image_link = Base64ImageField(required=False)
+
+    class Meta:
+        model = Group
+        fields = (
+            'title', 'description', 'created_date', 'author', 'image_link',
+            'followers_count'
+        )
 
 
 class ShortInfoSerializer(UserSerializer):
