@@ -136,7 +136,7 @@ class ChangePasswordView(CreateAPIView):
 class UsersViewSet(UpdateListRetrieveViewSet):
     """Users view."""
 
-    actions_list = ['PUT', 'PATCH']
+    actions_list = ['PATCH']
     queryset = CustomUser.objects.all()
     permission_classes = (IsAuthenticated,)
     pagination_class = LimitOffsetPagination
@@ -236,7 +236,6 @@ class BirthdayList(ListAPIView):
         today = dt.datetime.today().date()
         max_day = today + dt.timedelta(days=3)
         if max_day.month != today.month:
-            print(type(CustomUser.objects.get(id=1).birthday_date))
             return (CustomUser.objects.filter(
                 Q(birthday_date__month=max_day.month,
                   birthday_date__day__lte=max_day.day)
