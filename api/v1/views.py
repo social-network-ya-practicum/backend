@@ -1,9 +1,11 @@
 import datetime as dt
 
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.db.models import IntegerField, Q, Value
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import filters, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
@@ -122,8 +124,12 @@ class ChangePasswordView(CreateAPIView):
                 return Response(
                     {_('current_password'): _('Wrong password.')},
                     status=status.HTTP_400_BAD_REQUEST)
-            self.object.set_password(
-                serializer.validated_data.get('new_password'))
+            new_password = serializer.validated_data.get('new_password')
+            self.object.set_password(new_password)
+            try:
+                validate_password(password=new_password, user=self.object)
+            except ValidationError as err:
+                raise serializers.ValidationError({'password': err.messages})
             self.object.save()
             return Response(
                 {_('message'): _('Password updated successfully')},

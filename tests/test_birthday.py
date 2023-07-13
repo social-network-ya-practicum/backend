@@ -8,6 +8,32 @@ pytestmark = pytest.mark.django_db
 class TestBirthday:
     path = '/api/v1/birthday_list/'
 
+    @pytest.mark.parametrize(
+        'email, password, is_authenticated, validity',
+        [
+            ('test@mail.com', 'password', True, status.HTTP_200_OK),
+            ('test@mail.com', 'password', False, status.HTTP_401_UNAUTHORIZED),
+        ]
+    )
+    def test_birthday_list_get(
+        self, authenticated_user_factory, new_user_factory, client,
+        email, password, is_authenticated, validity,
+    ):
+        user = (
+            authenticated_user_factory(email=email, password=password)
+            if is_authenticated
+            else new_user_factory(email=email, password=password)
+        )
+        token = user.auth_token.key if is_authenticated else None
+        response = client.get(
+            self.path,
+            HTTP_AUTHORIZATION=f"Token {token}"
+        )
+        data = response.json()
+        assert response.status_code == validity
+        if len(data) == 0:
+            assert len(data) == 0
+
     def test_birthday_list_limit(
             self, authenticated_user_factory, new_user_factory, client,
     ):
