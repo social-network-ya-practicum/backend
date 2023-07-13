@@ -108,6 +108,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'api.v1.password_validators.ValidSymbolsPasswordValidator',
+    },
+    {
+        'NAME': 'api.v1.password_validators.RequiredSymbolsPasswordValidator',
+    },
 ]
 
 LANGUAGE_CODE = 'ru-RU'
