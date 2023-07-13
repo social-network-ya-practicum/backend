@@ -35,6 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
     photo = serializers.SerializerMethodField()
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
@@ -42,8 +43,11 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo', 'department',
+            'bio', 'photo', 'department', 'groups'
         )
+
+    def get_groups(self, obj):
+        return obj.followings.all()
 
     def get_photo(self, obj):
         if obj.photo:
