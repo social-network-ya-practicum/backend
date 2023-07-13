@@ -1,10 +1,10 @@
 from django.urls import include, path
-from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
 from .views import (AddressBookView, BirthdayList, ChangePasswordView,
-                    CommentsViewSet, CreateUsersViewSet, PostViewSet,
-                    ShortInfoView, UsersViewSet, GroupViewSet)
+                    CommentsViewSet, CreateUsersViewSet, GroupViewSet,
+                    PostViewSet, ShortInfoView, TokenCreateView,
+                    UserPostsViewSet, UsersViewSet, СhangedTokenDestroyView)
 
 app_name = 'api'
 
@@ -17,11 +17,17 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path('auth/', include('djoser.urls.authtoken')),
+    path('auth/token/login/', TokenCreateView.as_view()),
+    path('auth/token/logout/', СhangedTokenDestroyView.as_view()),
     path(
         'users/registration/',
         CreateUsersViewSet.as_view({'post': 'create'}),
         name='registration'
+    ),
+    path(
+        'users/<int:user_id>/posts/',
+        UserPostsViewSet.as_view({'get': 'list'}),
+        name='user_posts'
     ),
     path(
         'users/set_password/',
@@ -35,9 +41,5 @@ urlpatterns = [
     ),
     path('birthday_list/', BirthdayList.as_view()),
     path('addressbook', AddressBookView.as_view()),
-    path('docs/', TemplateView.as_view(
-        template_name='docs/redoc.html',
-        extra_context={'schema_url': 'openapi-schema'}
-    ), name='swagger-ui'),
     path('', include(router_v1.urls)),
 ]
