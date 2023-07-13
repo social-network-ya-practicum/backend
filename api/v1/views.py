@@ -3,8 +3,11 @@ import datetime as dt
 from django.db.models import IntegerField, Q, Value
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
+from djoser.serializers import TokenCreateSerializer, TokenSerializer
+from djoser.utils import ActionViewMixin, login_user
+from djoser.views import TokenDestroyView
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import filters, generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
@@ -264,3 +267,30 @@ class AddressBookView(ListAPIView):
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['last_name', 'job_title']
+
+
+class СhangedActionViewMixin(ActionViewMixin):
+
+    @swagger_auto_schema(responses={200: TokenSerializer})
+    def post(self, request, **kwargs):
+        return super().post(request)
+
+
+class TokenCreateView(СhangedActionViewMixin, generics.GenericAPIView):
+
+    serializer_class = TokenCreateSerializer
+    permission_classes = (AllowAny,)
+
+    def _action(self, serializer):
+        token = login_user(self.request, serializer.user)
+        token_serializer_class = TokenSerializer
+        return Response(
+            data=token_serializer_class(token).data, status=status.HTTP_200_OK
+        )
+
+
+class СhangedTokenDestroyView(TokenDestroyView):
+
+    @swagger_auto_schema(responses={204: ''})
+    def post(self, request):
+        return super().post(request)

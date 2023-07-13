@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (AddressBookView, BirthdayList, ChangePasswordView,
                     CommentsViewSet, CreateUsersViewSet, GroupViewSet,
-                    PostViewSet, ShortInfoView, UserPostsViewSet, UsersViewSet)
+                    PostViewSet, ShortInfoView, TokenCreateView,
+                    UserPostsViewSet, UsersViewSet, СhangedTokenDestroyView)
 
 app_name = 'api'
 
@@ -16,7 +17,8 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path('auth/', include('djoser.urls.authtoken')),
+    path('auth/token/login/', TokenCreateView.as_view()),
+    path('auth/token/logout/', СhangedTokenDestroyView.as_view()),
     path(
         'users/registration/',
         CreateUsersViewSet.as_view({'post': 'create'}),
