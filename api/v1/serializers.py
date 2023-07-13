@@ -35,7 +35,9 @@ class UserSerializer(serializers.ModelSerializer):
     photo = serializers.SerializerMethodField()
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
-    groups = serializers.SerializerMethodField()
+    groups = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(), required=False
+    )
 
     class Meta:
         model = CustomUser
