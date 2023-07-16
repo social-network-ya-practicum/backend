@@ -1,4 +1,3 @@
-import os
 from os import getenv, path
 
 from dotenv import load_dotenv
@@ -61,7 +60,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'infra')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -160,7 +159,6 @@ DJOSER = {
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_CREDENTIALS = True
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'infra'),)
 
 LOGGING = {
     'version': 1,

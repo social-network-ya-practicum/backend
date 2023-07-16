@@ -4,13 +4,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from drf_extra_fields.fields import HybridImageField, Base64ImageField
+from drf_extra_fields.fields import Base64ImageField, HybridImageField
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
 from api.v1.utils import del_images
-from posts.models import Image, Post, Comment, Group
+from posts.models import Comment, Group, Image, Post
 
 CustomUser = get_user_model()
 
@@ -201,6 +201,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
         data['birthday_date'] = bithday_date
         return data
+
+
+class ResponseCreateCustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('email',)
 
 
 class CreateCustomUserSerializer(serializers.ModelSerializer):

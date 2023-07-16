@@ -5,7 +5,12 @@ from django.core.exceptions import ValidationError
 from django.db.models import IntegerField, Q, Value
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from rest_framework import filters, permissions, serializers, status, viewsets
+
+from djoser.serializers import TokenCreateSerializer, TokenSerializer
+from djoser.utils import ActionViewMixin, login_user
+from djoser.views import TokenDestroyView
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import filters, generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
@@ -14,17 +19,30 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from posts.models import Comment, Post, Group
+from posts.models import Comment, Group, Post
 from users.models import CustomUser
 
 from .mixins import CreateViewSet, UpdateListRetrieveViewSet
 from .permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from .serializers import (AddressBookSerializer, BirthdaySerializer,
                           ChangePasswordSerializer, CommentSerializer,
-                          CreateCustomUserSerializer, PostSerializer,
-                          GroupSerializer, ShortInfoSerializer, UserSerializer,
+                          CreateCustomUserSerializer, GroupSerializer,
+                          PostSerializer, ResponseCreateCustomUserSerializer,
+                          ShortInfoSerializer, UserSerializer,
                           UserUpdateSerializer)
 from .utils import del_images
+
+
+class UserPostsViewSet(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    pagination_class = LimitOffsetPagination
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return CustomUser.objects.none()
+        user = get_object_or_404(CustomUser, id=self.kwargs.get('user_id'))
+        return Post.objects.filter(author=user)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -113,6 +131,7 @@ class ChangePasswordView(CreateAPIView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    @swagger_auto_schema(responses={200: 'Password updated successfully'})
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
@@ -169,20 +188,6 @@ class UsersViewSet(UpdateListRetrieveViewSet):
         serializer = self.get_serializer(user_instance)
         return Response(serializer.data, status.HTTP_200_OK)
 
-    @action(
-        methods=('GET',),
-        detail=True
-    )
-    def posts(self, request, pk=None):
-        user_instance = CustomUser.objects.get(pk=pk)
-        posts = user_instance.posts.all()
-        page = self.paginate_queryset(posts)
-        if page is not None:
-            serializer = PostSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
-
 
 class CreateUsersViewSet(CreateViewSet):
     """Create users view."""
@@ -190,6 +195,10 @@ class CreateUsersViewSet(CreateViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CreateCustomUserSerializer
     permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(responses={201: ResponseCreateCustomUserSerializer})
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class GroupViewSet(ReadOnlyModelViewSet):
@@ -264,3 +273,30 @@ class AddressBookView(ListAPIView):
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['last_name', 'job_title']
+
+
+class СhangedActionViewMixin(ActionViewMixin):
+
+    @swagger_auto_schema(responses={200: TokenSerializer})
+    def post(self, request, **kwargs):
+        return super().post(request)
+
+
+class TokenCreateView(СhangedActionViewMixin, generics.GenericAPIView):
+
+    serializer_class = TokenCreateSerializer
+    permission_classes = (AllowAny,)
+
+    def _action(self, serializer):
+        token = login_user(self.request, serializer.user)
+        token_serializer_class = TokenSerializer
+        return Response(
+            data=token_serializer_class(token).data, status=status.HTTP_200_OK
+        )
+
+
+class СhangedTokenDestroyView(TokenDestroyView):
+
+    @swagger_auto_schema(responses={204: ''})
+    def post(self, request):
+        return super().post(request)
