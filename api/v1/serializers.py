@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from drf_extra_fields.fields import HybridImageField, Base64ImageField
 from rest_framework import serializers
@@ -229,6 +231,10 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
             email=validated_data['email']
         )
         user.set_password(validated_data['password'])
+        try:
+            validate_password(password=validated_data['password'], user=user)
+        except ValidationError as err:
+            raise serializers.ValidationError({'password': err.messages})
         user.save()
         return user
 
