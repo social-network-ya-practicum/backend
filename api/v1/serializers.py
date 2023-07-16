@@ -142,7 +142,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class GroupSerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
+    id = serializers.IntegerField(read_only=True)
     author = SlugRelatedField(slug_field='id', read_only=True)
     title = serializers.CharField(read_only=True)
     description = serializers.CharField(read_only=True)
