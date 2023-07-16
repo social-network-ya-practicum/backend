@@ -142,6 +142,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class GroupSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
     author = SlugRelatedField(slug_field='id', read_only=True)
     title = serializers.CharField(read_only=True)
     description = serializers.CharField(read_only=True)
@@ -152,8 +153,8 @@ class GroupSerializer(serializers.Serializer):
     class Meta:
         model = Group
         fields = (
-            'title', 'description', 'created_date', 'author', 'image_link',
-            'followers_count'
+            'title', 'description', 'created_date',
+            'author', 'image_link', 'followers_count'
         )
 
 
