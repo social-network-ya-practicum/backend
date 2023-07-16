@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField, HybridImageField
 from rest_framework import serializers
@@ -35,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
     photo = serializers.SerializerMethodField()
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
+    posts = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
@@ -42,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo', 'department',
+            'bio', 'photo', 'department', 'posts',
         )
 
     def get_photo(self, obj):
@@ -57,11 +60,24 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.birthday_date:
             return obj.birthday_date.month
 
+    def get_posts(self, obj):
+        posts = Post.objects.filter(author=obj)
+        serializer = PostSerializer(posts, many=True)
+        return serializer.data
+
 
 class PostSerializer(serializers.ModelSerializer):
     """Сериализация модели Post."""
 
-    author = UserSerializer(read_only=True)
+    first_name = serializers.CharField(
+        source='author.first_name', read_only=True
+    )
+    last_name = serializers.CharField(
+        source='author.last_name', read_only=True
+    )
+    photo = serializers.ImageField(
+        source='author.photo', read_only=True
+    )
     like_count = serializers.SerializerMethodField()
     images = ImageSerializer(many=True, required=False)
     group = serializers.PrimaryKeyRelatedField(
@@ -70,7 +86,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'id', 'text', 'author', 'pub_date', 'update_date',
+            'id', 'text', 'first_name', 'last_name',
+            'photo', 'pub_date', 'update_date',
             'images', 'like_count', 'likes', 'group',
         )
         model = Post
@@ -220,6 +237,10 @@ class CreateCustomUserSerializer(serializers.ModelSerializer):
             email=validated_data['email']
         )
         user.set_password(validated_data['password'])
+        try:
+            validate_password(password=validated_data['password'], user=user)
+        except ValidationError as err:
+            raise serializers.ValidationError({'password': err.messages})
         user.save()
         return user
 

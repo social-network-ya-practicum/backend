@@ -31,7 +31,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _('Должность'), max_length=150, blank=True, null=True
     )
     personal_email = models.EmailField(
-        _('Личная почта'), max_length=254, unique=True,
+        _('Личная почта'), max_length=254,
         blank=True, null=True
     )
     corporate_phone_number = PhoneNumberField(
@@ -40,7 +40,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         blank=True, null=True
     )
     personal_phone_number = PhoneNumberField(
-        _('Личный номер телефона'), unique=True,
+        _('Личный номер телефона'),
         help_text=_('Формат: +99999999999'),
         blank=True, null=True
     )
