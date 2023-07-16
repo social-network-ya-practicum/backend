@@ -10,7 +10,9 @@ from djoser.serializers import TokenCreateSerializer, TokenSerializer
 from djoser.utils import ActionViewMixin, login_user
 from djoser.views import TokenDestroyView
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import filters, generics, permissions, status, viewsets
+from rest_framework import (
+    filters, generics, permissions, status, viewsets, serializers
+)
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
