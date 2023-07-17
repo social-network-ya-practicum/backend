@@ -29,6 +29,15 @@ class ImageSerializer(serializers.ModelSerializer):
             return f'https://csn.sytes.net/media/{str(obj.image_link)}'
 
 
+class UserShortInfoSerializer(serializers.ModelSerializer):
+    """Короткая информация о пользователе в постах"""
+    class Meta:
+        model = CustomUser
+        fields = (
+            'id', 'first_name', 'last_name', 'photo', 'is_staff'
+        )
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for users endpoint.
@@ -69,15 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     """Сериализация модели Post."""
 
-    first_name = serializers.CharField(
-        source='author.first_name', read_only=True
-    )
-    last_name = serializers.CharField(
-        source='author.last_name', read_only=True
-    )
-    photo = serializers.ImageField(
-        source='author.photo', read_only=True
-    )
+    author = UserShortInfoSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
     images = ImageSerializer(many=True, required=False)
     group = serializers.PrimaryKeyRelatedField(
@@ -86,8 +87,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'id', 'text', 'first_name', 'last_name',
-            'photo', 'pub_date', 'update_date',
+            'id', 'text', 'author', 'pub_date', 'update_date',
             'images', 'like_count', 'likes', 'group',
         )
         model = Post
