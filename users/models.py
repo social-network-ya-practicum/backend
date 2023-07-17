@@ -106,4 +106,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             logger.info(f'Обновление пользователя - "{self.email}"')
         else:
             logger.info(f'Создание пользователя - "{self.email}"')
+        if not self.personal_phone_number:
+            self.personal_phone_number = None
+        if not self.personal_email:
+            self.personal_email = None
         super().save(force_insert, force_update, using, update_fields)
