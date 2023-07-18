@@ -164,3 +164,41 @@ class Image(models.Model):
         super().save(force_insert, force_update, using, update_fields)
         if is_created:
             logger.info(f'Создано изображение id#{self.id}')
+
+
+class File(models.Model):
+    """Модель для файлов к посту."""
+
+    post = models.ForeignKey(
+        Post,
+        verbose_name='Пост',
+        related_name='files',
+        on_delete=models.CASCADE,
+    )
+    file_link = models.FileField(
+        verbose_name='Файл',
+        upload_to='posts/files/%Y/%m/%d',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Файл'
+        verbose_name_plural = 'Файлы'
+        ordering = ('-post', 'id',)
+
+    def save(
+        self, force_insert=False, force_update=False,
+        using=None, update_fields=None
+    ):
+        is_created = False
+        if self.id:
+            logger.info(
+                f'Обновление файла id#{self.id} к посту "{self.post}"'
+            )
+        else:
+            logger.info(f'Создание файла к посту "{self.post}"')
+            is_created = True
+        super().save(force_insert, force_update, using, update_fields)
+        if is_created:
+            logger.info(f'Создан файл id#{self.id}')

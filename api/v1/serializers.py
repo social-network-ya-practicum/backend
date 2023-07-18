@@ -1,16 +1,19 @@
+import filetype
+
 from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField, HybridImageField
+from drf_extra_fields.fields import (
+    Base64FileField, Base64ImageField, HybridImageField)
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
-from api.v1.utils import del_images
-from posts.models import Comment, Group, Image, Post
+from api.v1.utils import del_files, del_images
+from posts.models import Comment, File, Group, Image, Post
 
 CustomUser = get_user_model()
 
@@ -27,6 +30,33 @@ class ImageSerializer(serializers.ModelSerializer):
     def get_image_link(self, obj):
         if obj.image_link:
             return f'https://csn.sytes.net/media/{str(obj.image_link)}'
+
+
+class FileField(Base64FileField):
+    ALLOWED_TYPES = [
+        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt',
+        'pdf', 'rtf', 'zip', 'rar',
+        'png', 'jgp', 'webp', 'gif', 'tif', 'bmp',
+        'mp3', 'wav', 'mp4', 'mkv', 'webm', 'mov', 'avi', 'mpg'
+    ]
+
+    def get_file_extension(self, filename, decoded_file):
+        file_type = filetype.guess(decoded_file)
+        return file_type.extension
+
+
+class FileSerializer(serializers.ModelSerializer):
+    """Сериализация файлов."""
+
+    file_link = FileField(required=False)
+
+    class Meta:
+        fields = ('file_link',)
+        model = File
+
+    def get_file_link(self, obj):
+        if obj.file_link:
+            return f'https://csn.sytes.net/media/{str(obj.file_link)}'
 
 
 class UserShortInfoSerializer(serializers.ModelSerializer):
@@ -81,6 +111,7 @@ class PostSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
     images = ImageSerializer(many=True, required=False)
+    files = FileSerializer(many=True, required=False)
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(), required=False
     )
@@ -88,7 +119,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'like_count', 'likes', 'group',
+            'images', 'files', 'like_count', 'likes', 'group',
         )
         model = Post
 
@@ -107,27 +138,68 @@ class PostSerializer(serializers.ModelSerializer):
         )
         Image.objects.bulk_create(objs_image)
 
+    @staticmethod
+    def create_files(post, files):
+        """Сохраняет файлы к посту."""
+        objs_file = (
+            File(
+                post=post,
+                file_link=file.get('file_link')
+            ) for file in files if file
+        )
+        File.objects.bulk_create(objs_file)
+
     @transaction.atomic
     def create(self, validate_data):
-        if 'images' in validate_data:
-            images = validate_data.pop('images')
+        attrib = {
+            'images': None,
+            'files': None
+        }
+        is_image_file = False
+        for key in attrib:
+            if key in validate_data:
+                attrib[key] = validate_data.pop(key)
+                is_image_file = True
+        if is_image_file:
             post = Post(**validate_data)
             post.save()
-            self.create_images(post, images)
+            if attrib['images']:
+                self.create_images(post, attrib['images'])
+            if attrib['files']:
+                if len(attrib['files']) > 10:
+                    raise serializers.ValidationError(
+                        'Возможно добавление не более 10 файлов.'
+                    )
+                self.create_files(post, attrib['files'])
             return post
-
         return super().create(validate_data)
 
     @transaction.atomic()
     def update(self, instance, validate_data):
-        if 'images' in validate_data:
-            images = validate_data.pop('images')
+        attrib = {
+            'images': None,
+            'files': None
+        }
+        is_image_file = False
+        for key in attrib:
+            if key in validate_data:
+                attrib[key] = validate_data.pop(key)
+                is_image_file = True
+        if is_image_file:
             super().update(instance, validate_data)
-            del_images(instance)
-            Image.objects.filter(post=instance).delete()
-            self.create_images(instance, images)
+            if attrib['images']:
+                del_images(instance)
+                Image.objects.filter(post=instance).delete()
+                self.create_images(instance, attrib['images'])
+            if attrib['files']:
+                if len(attrib['files']) > 10:
+                    raise serializers.ValidationError(
+                        'Возможно добавление не более 10 файлов.'
+                    )
+                del_files(instance)
+                File.objects.filter(post=instance).delete()
+                self.create_files(instance, attrib['files'])
             return instance
-
         return super().update(instance, validate_data)
 
 
