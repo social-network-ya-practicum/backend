@@ -50,7 +50,7 @@ class UserPostsViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     """Добавление, изменение и удаление постов. Получение списка постов."""
 
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().prefetch_related('comments')
     serializer_class = PostSerializer
     pagination_class = LimitOffsetPagination
 
@@ -165,7 +165,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
     """Users view."""
 
     actions_list = ['PATCH']
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.all().prefetch_related('followings')
     permission_classes = (IsAuthenticated,)
     pagination_class = LimitOffsetPagination
     lookup_field = 'pk'

@@ -15,6 +15,8 @@ from posts.models import Comment, File, Group, Image, Post
 
 import filetype
 
+
+COMMENT_LIMIT = 5
 CustomUser = get_user_model()
 
 
@@ -77,6 +79,7 @@ class UserSerializer(serializers.ModelSerializer):
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
     posts = serializers.SerializerMethodField()
+    followings = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
@@ -84,7 +87,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo', 'department', 'posts',
+            'bio', 'photo', 'department', 'posts', 'followings'
         )
 
     def get_photo(self, obj):
@@ -105,6 +108,19 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(read_only=True)
+    like_count = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
+        model = Comment
+
+    def get_like_count(self, obj):
+        """Вычисляет количество лайков у комментария."""
+        return obj.like.count()
+
+
 class PostSerializer(serializers.ModelSerializer):
     """Сериализация модели Post."""
 
@@ -115,17 +131,23 @@ class PostSerializer(serializers.ModelSerializer):
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(), required=False
     )
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'files', 'like_count', 'likes', 'group',
+            'images', 'files', 'like_count', 'likes', 'group', 'comments'
         )
         model = Post
 
     def get_like_count(self, obj_post):
         """Вычисляет количество лайков у поста."""
         return obj_post.likes.count()
+
+    def get_comments(self, obj):
+        queryset = Comment.objects.filter(post=obj)[:COMMENT_LIMIT]
+        serializer = CommentSerializer(queryset, many=True)
+        return serializer.data
 
     @staticmethod
     def create_images(post, images):
@@ -352,16 +374,3 @@ class AddressBookSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'middle_name', 'last_name',
             'job_title', 'corporate_phone_number', 'photo'
         )
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    like_count = serializers.SerializerMethodField()
-
-    class Meta:
-        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
-        model = Comment
-
-    def get_like_count(self, obj):
-        """Вычисляет количество лайков у комментария."""
-        return obj.like.count()
