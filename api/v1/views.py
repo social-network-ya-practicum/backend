@@ -5,14 +5,12 @@ from django.core.exceptions import ValidationError
 from django.db.models import IntegerField, Q, Value
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-
 from djoser.serializers import TokenCreateSerializer, TokenSerializer
 from djoser.utils import ActionViewMixin, login_user
 from djoser.views import TokenDestroyView
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import (
-    filters, generics, permissions, status, viewsets, serializers
-)
+from rest_framework import (filters, generics, permissions, serializers,
+                            status, viewsets)
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
@@ -97,6 +95,8 @@ class CommentsViewSet(ModelViewSet):
         return get_object_or_404(Post, pk=self.kwargs.get('posts_id'))
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Comment.objects.none()
         return self.get_news().comments.all().select_related(
             'author', 'post').prefetch_related('like')
 
@@ -184,6 +184,7 @@ class UsersViewSet(UpdateListRetrieveViewSet):
 
     @action(
         methods=('GET',),
+        pagination_class=None,
         detail=False
     )
     def me(self, request):

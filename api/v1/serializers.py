@@ -1,21 +1,18 @@
 from datetime import date, datetime
 
+import filetype
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from drf_extra_fields.fields import (
-    Base64FileField, Base64ImageField, HybridImageField
-)
+from drf_extra_fields.fields import (Base64FileField, Base64ImageField,
+                                     HybridImageField)
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
 from api.v1.utils import del_files, del_images
 from posts.models import Comment, File, Group, Image, Post
-
-import filetype
-
 
 COMMENT_LIMIT = 5
 CustomUser = get_user_model()
@@ -69,57 +66,6 @@ class UserShortInfoSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name', 'photo', 'is_staff'
         )
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for users endpoint.
-    """
-    email = serializers.CharField(read_only=True)
-    photo = serializers.SerializerMethodField()
-    birthday_day = serializers.SerializerMethodField()
-    birthday_month = serializers.SerializerMethodField()
-    posts = serializers.SerializerMethodField()
-    followings = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-    class Meta:
-        model = CustomUser
-        fields = (
-            'id', 'email', 'first_name', 'last_name', 'middle_name',
-            'job_title', 'personal_email', 'corporate_phone_number',
-            'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo', 'department', 'posts', 'followings'
-        )
-
-    def get_photo(self, obj):
-        if obj.photo:
-            return f'https://csn.sytes.net/media/{str(obj.photo)}'
-
-    def get_birthday_day(self, obj):
-        if obj.birthday_date:
-            return obj.birthday_date.day
-
-    def get_birthday_month(self, obj):
-        if obj.birthday_date:
-            return obj.birthday_date.month
-
-    def get_posts(self, obj):
-        posts = Post.objects.filter(author=obj)
-        serializer = PostSerializer(posts, many=True)
-        return serializer.data
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    author = UserShortInfoSerializer(read_only=True)
-    like_count = serializers.SerializerMethodField()
-
-    class Meta:
-        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
-        model = Comment
-
-    def get_like_count(self, obj):
-        """Вычисляет количество лайков у комментария."""
-        return obj.like.count()
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -224,6 +170,52 @@ class PostSerializer(serializers.ModelSerializer):
                 self.create_files(instance, attrib['files'])
             return instance
         return super().update(instance, validate_data)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for users endpoint.
+    """
+    email = serializers.CharField(read_only=True)
+    photo = serializers.SerializerMethodField()
+    birthday_day = serializers.SerializerMethodField()
+    birthday_month = serializers.SerializerMethodField()
+    posts = PostSerializer(many=True)
+    followings = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'id', 'email', 'first_name', 'last_name', 'middle_name',
+            'job_title', 'personal_email', 'corporate_phone_number',
+            'personal_phone_number', 'birthday_day', 'birthday_month',
+            'bio', 'photo', 'department', 'posts', 'followings'
+        )
+
+    def get_photo(self, obj):
+        if obj.photo:
+            return f'https://csn.sytes.net/media/{str(obj.photo)}'
+
+    def get_birthday_day(self, obj):
+        if obj.birthday_date:
+            return obj.birthday_date.day
+
+    def get_birthday_month(self, obj):
+        if obj.birthday_date:
+            return obj.birthday_date.month
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(read_only=True)
+    like_count = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
+        model = Comment
+
+    def get_like_count(self, obj):
+        """Вычисляет количество лайков у комментария."""
+        return obj.like.count()
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -373,5 +365,5 @@ class AddressBookSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = (
             'id', 'email', 'first_name', 'middle_name', 'last_name',
-            'job_title', 'corporate_phone_number', 'photo'
+            'job_title', 'corporate_phone_number', 'photo', 'department'
         )
