@@ -108,16 +108,16 @@ class CommentsViewSet(ModelViewSet):
         methods=('POST',),
         detail=True,
     )
-    def set_like(self, request, pk):
-        comment = get_object_or_404(Comment, id=pk)
+    def set_like(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, id=self.kwargs['pk'])
         comment.like.add(request.user)
         return Response(
             CommentSerializer(comment).data, status=status.HTTP_201_CREATED
         )
 
     @set_like.mapping.delete
-    def delete_like(self, request, pk):
-        comment = get_object_or_404(Comment, id=pk)
+    def delete_like(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, id=self.kwargs['pk'])
         comment.like.remove(request.user)
         return Response(
             CommentSerializer(comment).data, status=status.HTTP_204_NO_CONTENT
