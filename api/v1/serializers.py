@@ -1,5 +1,3 @@
-import filetype
-
 from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
@@ -14,6 +12,8 @@ from rest_framework.validators import UniqueValidator
 
 from api.v1.utils import del_files, del_images
 from posts.models import Comment, File, Group, Image, Post
+
+import filetype
 
 CustomUser = get_user_model()
 
