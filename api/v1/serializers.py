@@ -47,6 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
     posts = serializers.SerializerMethodField()
+    followings = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
@@ -54,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'job_title', 'personal_email', 'corporate_phone_number',
             'personal_phone_number', 'birthday_day', 'birthday_month',
-            'bio', 'photo', 'department', 'posts',
+            'bio', 'photo', 'department', 'posts', 'followings'
         )
 
     def get_photo(self, obj):
