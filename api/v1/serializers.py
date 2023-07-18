@@ -5,7 +5,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from drf_extra_fields.fields import (
-    Base64FileField, Base64ImageField, HybridImageField)
+    Base64FileField, Base64ImageField, HybridImageField
+)
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
