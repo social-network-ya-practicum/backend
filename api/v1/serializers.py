@@ -12,6 +12,8 @@ from rest_framework.validators import UniqueValidator
 from api.v1.utils import del_images
 from posts.models import Comment, Group, Image, Post
 
+
+COMMENT_LIMIT = 5
 CustomUser = get_user_model()
 
 
@@ -75,6 +77,19 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(read_only=True)
+    like_count = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
+        model = Comment
+
+    def get_like_count(self, obj):
+        """Вычисляет количество лайков у комментария."""
+        return obj.like.count()
+
+
 class PostSerializer(serializers.ModelSerializer):
     """Сериализация модели Post."""
 
@@ -84,17 +99,23 @@ class PostSerializer(serializers.ModelSerializer):
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(), required=False
     )
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
             'id', 'text', 'author', 'pub_date', 'update_date',
-            'images', 'like_count', 'likes', 'group',
+            'images', 'like_count', 'likes', 'group', 'comments'
         )
         model = Post
 
     def get_like_count(self, obj_post):
         """Вычисляет количество лайков у поста."""
         return obj_post.likes.count()
+
+    def get_comments(self, obj):
+        queryset = Comment.objects.filter(post=obj)[:COMMENT_LIMIT]
+        serializer = CommentSerializer(queryset, many=True)
+        return serializer.data
 
     @staticmethod
     def create_images(post, images):
@@ -280,16 +301,3 @@ class AddressBookSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'middle_name', 'last_name',
             'job_title', 'corporate_phone_number', 'photo'
         )
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    like_count = serializers.SerializerMethodField()
-
-    class Meta:
-        fields = ('id', 'text', 'author', 'pub_date', 'like_count', 'like')
-        model = Comment
-
-    def get_like_count(self, obj):
-        """Вычисляет количество лайков у комментария."""
-        return obj.like.count()
