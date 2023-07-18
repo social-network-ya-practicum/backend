@@ -119,9 +119,7 @@ class CommentsViewSet(ModelViewSet):
     def delete_like(self, request, *args, **kwargs):
         comment = get_object_or_404(Comment, id=self.kwargs['pk'])
         comment.like.remove(request.user)
-        return Response(
-            CommentSerializer(comment).data, status=status.HTTP_204_NO_CONTENT
-        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ChangePasswordView(CreateAPIView):
