@@ -45,3 +45,4 @@ django-cors-headers==4.0.0
 pytest-django==4.5.2
 pytest==7.3.2
 drf-standardized-errors
+filetype==1.2.0

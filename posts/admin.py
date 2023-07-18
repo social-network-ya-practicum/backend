@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Count
 
 from config.settings import PAGINATION_LIMIT_IN_ADMIN_PANEL
-from posts.models import Image, Post, Comment, Group
+from posts.models import Image, Post, Comment, File, Group
 
 admin.site.site_title = 'Корпоративная сеть'
 admin.site.site_header = 'Корпоративная сеть'
@@ -20,6 +20,20 @@ class ImageAdmin(admin.ModelAdmin):
     """Класс для работы с изображениями в админке."""
 
     list_display = ('pk', 'image_link', 'post',)
+    search_fields = ('post',)
+
+
+class FileInline(admin.TabularInline):
+    """Отображение файла на странице поста."""
+
+    model = File
+
+
+@admin.register(File)
+class FileAdmin(admin.ModelAdmin):
+    """Класс для работы с файлами в админке."""
+
+    list_display = ('pk', 'file_link', 'post',)
     search_fields = ('post',)
 
 
@@ -76,7 +90,7 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('text',)
     list_filter = ('pub_date', 'author')
     ordering = ('-pub_date',)
-    inlines = (ImageInline,)
+    inlines = (ImageInline, FileInline,)
     empty_value_display = '-пусто-'
     list_per_page = PAGINATION_LIMIT_IN_ADMIN_PANEL
 

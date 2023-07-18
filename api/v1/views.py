@@ -32,7 +32,7 @@ from .serializers import (AddressBookSerializer, BirthdaySerializer,
                           PostSerializer, ResponseCreateCustomUserSerializer,
                           ShortInfoSerializer, UserSerializer,
                           UserUpdateSerializer)
-from .utils import del_images
+from .utils import del_files, del_images
 
 
 class UserPostsViewSet(viewsets.ModelViewSet):
@@ -59,6 +59,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         del_images(instance)
+        del_files(instance)
         super().perform_destroy(instance)
 
     @action(
