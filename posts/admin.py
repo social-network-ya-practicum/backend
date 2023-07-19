@@ -33,7 +33,7 @@ class FileInline(admin.TabularInline):
 class FileAdmin(admin.ModelAdmin):
     """Класс для работы с файлами в админке."""
 
-    list_display = ('pk', 'file_link', 'post',)
+    list_display = ('pk', 'file_link', 'file_title', 'post',)
     search_fields = ('post',)
 
 
