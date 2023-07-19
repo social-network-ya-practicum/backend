@@ -32,6 +32,14 @@ class ImageSerializer(serializers.ModelSerializer):
             return f'https://csn.sytes.net/media/{str(obj.image_link)}'
 
 
+class IdPhotoUserSerializer(serializers.ModelSerializer):
+    """Short representation of User for groups serialization."""
+
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'photo')
+
+
 class FileField(Base64FileField):
     ALLOWED_TYPES = [
         'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt',
@@ -236,6 +244,7 @@ class GroupSerializer(serializers.Serializer):
     followers_count = serializers.ReadOnlyField(source='followers.count')
     created_date = serializers.DateTimeField()
     image_link = Base64ImageField(required=False)
+    followers = IdPhotoUserSerializer(many=True)
     posts_group = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
@@ -243,7 +252,7 @@ class GroupSerializer(serializers.Serializer):
         fields = (
             'title', 'description', 'created_date',
             'author', 'image_link', 'followers_count',
-            'posts_group'
+            'followers', 'posts_group'
         )
 
 
