@@ -247,7 +247,6 @@ class GroupSerializer(serializers.Serializer):
     followers = IdPhotoUserSerializer(many=True)
     posts_group = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
-
     class Meta:
         model = Group
         fields = (
