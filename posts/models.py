@@ -181,6 +181,11 @@ class File(models.Model):
         blank=True,
         null=True,
     )
+    file_title = models.CharField(
+        verbose_name='Название',
+        max_length=100,
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'Файл'

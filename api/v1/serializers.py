@@ -59,7 +59,7 @@ class FileSerializer(serializers.ModelSerializer):
     file_link = FileField(required=False)
 
     class Meta:
-        fields = ('file_link',)
+        fields = ('file_link', 'file_title')
         model = File
 
     def get_file_link(self, obj):
@@ -121,7 +121,8 @@ class PostSerializer(serializers.ModelSerializer):
         objs_file = (
             File(
                 post=post,
-                file_link=file.get('file_link')
+                file_link=file.get('file_link'),
+                file_title=file.get('file_title'),
             ) for file in files if file
         )
         File.objects.bulk_create(objs_file)
