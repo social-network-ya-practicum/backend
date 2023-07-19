@@ -245,13 +245,15 @@ class GroupSerializer(serializers.Serializer):
     created_date = serializers.DateTimeField()
     image_link = Base64ImageField(required=False)
     followers = IdPhotoUserSerializer(many=True)
+    posts_group = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
 
     class Meta:
         model = Group
         fields = (
             'title', 'description', 'created_date',
             'author', 'image_link', 'followers_count',
-            'followers'
+            'followers', 'posts_group'
         )
 
 
