@@ -263,12 +263,12 @@ class BirthdayList(ListAPIView):
                   birthday_date__day__lte=max_day.day)
                 | (Q(birthday_date__month=today.month,
                    birthday_date__day__gte=today.day))
-            )).order_by('birthday_date__month', 'birthday_date__day')[:3]
+            )).order_by('birthday_date__month', 'birthday_date__day')
         return (CustomUser.objects.filter(
             Q(birthday_date__month=today.month,
               birthday_date__day__lte=max_day.day,
               birthday_date__day__gte=today.day)
-        )).order_by('birthday_date__month', 'birthday_date__day')[:3]
+        )).order_by('birthday_date__month', 'birthday_date__day')
 
 
 class AddressBookView(ListAPIView):
