@@ -27,9 +27,9 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ('image_link',)
         model = Image
 
-    def get_image_link(self, obj):
-        if obj.image_link:
-            return f'https://csn.sytes.net/media/{str(obj.image_link)}'
+    # def get_image_link(self, obj):
+    #     if obj.image_link:
+    #         return f'https://csn.sytes.net/media/{str(obj.image_link)}'
 
 
 class FileField(Base64FileField):
@@ -177,7 +177,7 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for users endpoint.
     """
     email = serializers.CharField(read_only=True)
-    photo = serializers.SerializerMethodField()
+    photo = Base64ImageField(required=False)
     birthday_day = serializers.SerializerMethodField()
     birthday_month = serializers.SerializerMethodField()
     posts = PostSerializer(many=True)
@@ -192,9 +192,9 @@ class UserSerializer(serializers.ModelSerializer):
             'bio', 'photo', 'department', 'posts', 'followings'
         )
 
-    def get_photo(self, obj):
-        if obj.photo:
-            return f'https://csn.sytes.net/media/{str(obj.photo)}'
+    # def get_photo(self, obj):
+    #     if obj.photo:
+    #         return f'https://csn.sytes.net/media/{str(obj.photo)}'
 
     def get_birthday_day(self, obj):
         if obj.birthday_date:
