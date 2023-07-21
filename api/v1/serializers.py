@@ -5,8 +5,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from drf_extra_fields.fields import (Base64FileField, Base64ImageField,
-                                     HybridImageField)
+from drf_extra_fields.fields import (
+    Base64FileField, Base64ImageField, HybridImageField
+)
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
@@ -26,10 +27,6 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('image_link',)
         model = Image
-
-    # def get_image_link(self, obj):
-    #     if obj.image_link:
-    #         return f'https://csn.sytes.net/media/{str(obj.image_link)}'
 
 
 class FileField(Base64FileField):
@@ -191,10 +188,6 @@ class UserSerializer(serializers.ModelSerializer):
             'personal_phone_number', 'birthday_day', 'birthday_month',
             'bio', 'photo', 'department', 'posts', 'followings'
         )
-
-    # def get_photo(self, obj):
-    #     if obj.photo:
-    #         return f'https://csn.sytes.net/media/{str(obj.photo)}'
 
     def get_birthday_day(self, obj):
         if obj.birthday_date:
