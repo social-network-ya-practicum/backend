@@ -87,7 +87,6 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(ModelViewSet):
     queryset = Comment.objects.all().select_related(
         'author', 'post').prefetch_related('like')
-    pagination_class = LimitOffsetPagination
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
 
