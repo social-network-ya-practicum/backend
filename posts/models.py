@@ -84,7 +84,7 @@ class Post(AbstractBaseModel):
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
-        ordering = ('-pub_date',)
+        ordering = ('-pub_date', '-id')
 
     def save(
         self, force_insert=False, force_update=False,
