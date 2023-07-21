@@ -208,7 +208,7 @@ class GroupViewSet(ReadOnlyModelViewSet):
     serializer_class = GroupSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = ('^title',)
+    search_fields = ('title',)
 
     @action(
         url_path='subscribe',
