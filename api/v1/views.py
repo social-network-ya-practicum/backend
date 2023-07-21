@@ -88,6 +88,7 @@ class CommentsViewSet(ModelViewSet):
     queryset = Comment.objects.all().select_related(
         'author', 'post').prefetch_related('like')
     serializer_class = CommentSerializer
+    pagination_class = None
     permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
 
     def get_news(self):
