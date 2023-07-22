@@ -14,7 +14,6 @@ from rest_framework.validators import UniqueValidator
 from api.v1.utils import del_files, del_images
 from posts.models import Comment, File, Group, Image, Post
 
-COMMENT_LIMIT = 5
 CustomUser = get_user_model()
 
 
@@ -100,7 +99,7 @@ class PostSerializer(serializers.ModelSerializer):
         return obj_post.likes.count()
 
     def get_comments(self, obj):
-        queryset = Comment.objects.filter(post=obj)[:COMMENT_LIMIT]
+        queryset = Comment.objects.filter(post=obj)
         serializer = CommentSerializer(queryset, many=True)
         return serializer.data
 
