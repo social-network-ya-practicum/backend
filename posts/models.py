@@ -28,6 +28,7 @@ class Group(models.Model):
     title = models.CharField('Название', max_length=50)
     description = models.CharField('Описание', max_length=1000)
     created_date = models.DateTimeField('Дата создания', auto_now_add=True)
+    resume = models.CharField('Резюме', max_length=35)
     author = models.ForeignKey(
         CustomUser,
         verbose_name='Автор',
